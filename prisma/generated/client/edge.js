@@ -83,6 +83,9 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
+  ReadUncommitted: 'ReadUncommitted',
+  ReadCommitted: 'ReadCommitted',
+  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -129,6 +132,11 @@ exports.Prisma.TokenScalarFieldEnum = {
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
 };
 
 exports.Prisma.NullsOrder = {
@@ -197,18 +205,17 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "sqlite",
-  "postinstall": false,
+  "activeProvider": "postgresql",
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "postgres://neondb_owner:npg_YAMib9Ijmq2f@ep-empty-cake-a1hm9c3o-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Status {\n  ACTIVE\n  INACTIVE\n  DELETED\n}\n\nenum Role {\n  SUPERADMIN\n  ADMIN\n  USER\n}\n\nenum AuthStatus {\n  ACTIVE\n  SUSPENDED\n  BANNED\n  DELETED\n}\n\nmodel User {\n  id         String    @id @default(uuid())\n  name       String\n  phone      String\n  isVerified Boolean   @default(false)\n  role       Role      @default(USER)\n  auth       Auth?\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  deletedAt  DateTime?\n\n  @@index([role])\n  @@index([name])\n}\n\nmodel Auth {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  phone     String     @unique\n  userId    String     @unique\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tokens    Token[]\n  status    AuthStatus @default(ACTIVE)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n  deletedAt DateTime?\n}\n\nmodel Token {\n  id         String    @id @default(uuid())\n  token      String    @unique\n  agent      String\n  ipAddress  String\n  authId     String\n  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)\n  issuedAt   DateTime  @default(now())\n  expiresAt  DateTime\n  lastUsedAt DateTime?\n  revoked    Boolean   @default(false)\n  revokedAt  DateTime?\n  revokedBy  String?\n  deletedAt  DateTime?\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n\n  @@index([authId, token])\n  @@index([revokedAt])\n  @@index([lastUsedAt])\n}\n",
-  "inlineSchemaHash": "f3aaed7aa8dbe411779faf0b39640ec296138bd3dc99193bafb897299169c31e",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nenum Status {\n  ACTIVE\n  INACTIVE\n  DELETED\n}\n\nenum Role {\n  SUPERADMIN\n  ADMIN\n  USER\n}\n\nenum AuthStatus {\n  ACTIVE\n  SUSPENDED\n  BANNED\n  DELETED\n}\n\nmodel User {\n  id         String    @id @default(uuid())\n  name       String\n  phone      String\n  isVerified Boolean   @default(false)\n  role       Role      @default(USER)\n  auth       Auth?\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n  deletedAt  DateTime?\n\n  @@index([role])\n  @@index([name])\n}\n\nmodel Auth {\n  id        String     @id @default(uuid())\n  email     String     @unique\n  password  String\n  phone     String     @unique\n  userId    String     @unique\n  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tokens    Token[]\n  status    AuthStatus @default(ACTIVE)\n  createdAt DateTime   @default(now())\n  updatedAt DateTime   @updatedAt\n  deletedAt DateTime?\n}\n\nmodel Token {\n  id         String    @id @default(uuid())\n  token      String    @unique\n  agent      String\n  ipAddress  String\n  authId     String\n  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)\n  issuedAt   DateTime  @default(now())\n  expiresAt  DateTime\n  lastUsedAt DateTime?\n  revoked    Boolean   @default(false)\n  revokedAt  DateTime?\n  revokedBy  String?\n  deletedAt  DateTime?\n  createdAt  DateTime  @default(now())\n  updatedAt  DateTime  @updatedAt\n\n  @@index([authId, token])\n  @@index([revokedAt])\n  @@index([lastUsedAt])\n}\n",
+  "inlineSchemaHash": "e96a9cb1e1112de5250e25c8e2c2a7f7195a2ad57a753dff0a78333ee7f8de1b",
   "copyEngine": true
 }
 config.dirname = '/'

@@ -10,17 +10,6 @@ import { prisma } from "@/lib/db";
 import { SuccessResponse } from "@/lib/successResponse";
 import { tokenMiddleware } from "@/utils/middleware/tokenMiddleware";
 
-/**
- * GET /api/v1/auth
- * Retrieves the authenticated user's profile information
- *
- * @requires Authorization Bearer token in header
- *
- * @returns {Object} Success Response
- *   - 200: User profile data
- *   - 401: Unauthorized - Invalid or missing token
- *   - 404: User not found
- */
 export async function GET(req: NextRequest) {
   try {
     const authorizationHeader = req.headers.get("authorization");
