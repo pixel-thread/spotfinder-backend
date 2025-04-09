@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum AuthStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+model User {
+  id         String    @id @default(uuid())
+  name       String
+  phone      String
+  isVerified Boolean   @default(false)
+  role       Role      @default(USER)
+  auth       Auth?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([role])
+  @@index([name])
+}
+
+model Auth {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  phone     String     @unique
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokens    Token[]
+  status    AuthStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+}
+
+model Token {
+  id         String    @id @default(uuid())
+  token      String    @unique
+  agent      String
+  ipAddress  String
+  authId     String
+  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)
+  issuedAt   DateTime  @default(now())
+  expiresAt  DateTime
+  lastUsedAt DateTime?
+  revoked    Boolean   @default(false)
+  revokedAt  DateTime?
+  revokedBy  String?
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([authId, token])
+  @@index([revokedAt])
+  @@index([lastUsedAt])
+}
