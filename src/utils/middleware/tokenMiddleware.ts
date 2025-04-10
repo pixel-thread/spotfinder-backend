@@ -1,3 +1,4 @@
+import { ErrorResponse } from "@/lib/errorResponse";
 import { extendTokenExpireDateByDays } from "@/services/token/extendTokenExpireDateByDays";
 import { getActiveToken } from "@/services/token/getActiveToken";
 import { NextRequest, NextResponse } from "next/server";

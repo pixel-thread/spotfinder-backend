@@ -1,14 +1,14 @@
-import { prisma } from "@/lib/db";
 import { createUser } from "@/services/user/createUser";
 import { getUserById } from "@/services/user/getUserById";
 import { getAuthByPhone } from "@/services/auth/getAuthByPhone";
 import { handleApiErrors } from "@/utils/errors/handleApiErrors";
-import { addDays } from "@/utils/token/addDays";
 import { generateToken } from "@/utils/token/generateToken";
 import { registerSchema } from "@/utils/validation/auth/register";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, } from "next/server";
 import { getUserByEmail } from "@/services/user/getUserByEmail";
 import { addNewToken } from "@/services/token/addNewToken";
+import { ErrorResponse } from "@/lib/errorResponse";
+import { SuccessResponse } from "@/lib/successResponse";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,20 +17,17 @@ export async function POST(req: NextRequest) {
     const existingEmail = await getUserByEmail({ email: body.email });
 
     if (existingUser || existingEmail) {
-      return NextResponse.json(
-        { message: "User already exists by this phone no or email" },
-        { status: 400 },
-      );
+      return ErrorResponse({
+        message: "User already exists by this phone no or email",
+        status: 400,
+      });
     }
 
     const createdUser = await createUser({ data: body });
     const token = await generateToken<string>({ id: createdUser.userId });
     const user = await getUserById({ id: createdUser.userId });
     if (!user) {
-      return NextResponse.json(
-        { message: "Please try again" },
-        { status: 404 },
-      );
+      return ErrorResponse({ message: "Please try again", status: 400 });
     }
 
     await addNewToken({
@@ -39,8 +36,7 @@ export async function POST(req: NextRequest) {
       agent: req.headers.get("user-agent") || "N/A",
     });
 
-    return NextResponse.json({
-      success: true,
+    return SuccessResponse({
       data: createdUser,
       token: token,
       message: "User created successfully",

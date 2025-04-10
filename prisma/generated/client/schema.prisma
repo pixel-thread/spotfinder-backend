@@ -28,49 +28,54 @@ enum AuthStatus {
 
 model User {
   id         String    @id @default(uuid())
-  name       String
+  name       String    @db.VarChar(255)
   isVerified Boolean   @default(false)
   role       Role      @default(USER)
   auth       Auth?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamp()
+  updatedAt  DateTime  @updatedAt @db.Timestamp()
+  deletedAt  DateTime? @db.Timestamp()
 
   @@index([role])
   @@index([name])
+  @@index([deletedAt])
 }
 
 model Auth {
   id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  phone     String     @unique
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  phone     String     @unique @db.VarChar(20)
   userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokens    Token[]
   status    AuthStatus @default(ACTIVE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime   @default(now()) @db.Timestamp()
+  updatedAt DateTime   @updatedAt @db.Timestamp()
+  deletedAt DateTime?  @db.Timestamp()
+
+  @@index([status])
+  @@index([deletedAt])
 }
 
 model Token {
   id         String    @id @default(uuid())
-  token      String    @unique
-  agent      String
+  token      String    @unique @db.Text
+  agent      String    @db.VarChar(255)
   authId     String
-  auth       Auth      @relation(fields: [authId], references: [id])
-  issuedAt   DateTime  @default(now())
-  expiresAt  DateTime
-  lastUsedAt DateTime?
+  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)
+  issuedAt   DateTime  @default(now()) @db.Timestamp()
+  expiresAt  DateTime  @db.Timestamp()
+  lastUsedAt DateTime? @db.Timestamp()
   revoked    Boolean   @default(false)
-  revokedAt  DateTime?
-  revokedBy  String?
-  deletedAt  DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  revokedAt  DateTime? @db.Timestamp()
+  revokedBy  String?   @db.VarChar(255)
+  deletedAt  DateTime? @db.Timestamp()
+  createdAt  DateTime  @default(now()) @db.Timestamp()
+  updatedAt  DateTime  @updatedAt @db.Timestamp()
 
   @@index([authId, token])
   @@index([revokedAt])
   @@index([lastUsedAt])
+  @@index([deletedAt])
 }
