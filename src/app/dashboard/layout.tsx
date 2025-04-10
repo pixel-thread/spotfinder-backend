@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 type Props = {
   children: Readonly<React.ReactNode>;
 };
+
 export default function DashboardLayout({ children }: Props) {
   return (
     <SidebarProvider
