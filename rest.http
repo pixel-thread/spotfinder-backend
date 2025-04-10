@@ -1,0 +1,67 @@
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjZlYzgxZWI0LTM2NWItNDMzNC1iODdiLTllZDJhYjhmOWRiMCIsImlhdCI6MTc0NDI3MzE2OX0.muAqeuBhwNyxyZgTt1mkbUSxNfdM9UTZSJyDEKV31mk
+@BASEURL=http://localhost:3000/api/v1
+
+###
+# @name Login 
+POST {{BASEURL}}/auth
+accept: application/json
+content-type: application/json
+
+{
+  "phone":"8787572702",
+  "password": "123Clashofclan@"
+}
+
+###
+# @name USER 
+GET {{BASEURL}}/auth
+accept: application/json
+content-type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Logout
+POST {{BASEURL}}/auth/logout
+accept: application/json
+content-type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Register 
+POST {{BASEURL}}/auth/register
+accept: application/json
+content-type: application/json
+
+{
+  "email": "test3@gmail.com",
+  "name": "Test",
+  "phone": "8787572703",
+  "password": "123Clashofclan@"
+}
+
+###
+# @name Dashboard 
+GET {{BASEURL}}/dashboard
+accept: application/json
+content-type: application/json
+Authorization: Bearer {{TOKEN}}
+
+###
+# @name Update User Role
+PATCH {{BASEURL}}/admin/role
+accept: application/json
+content-type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "userId":"72df3f34-c591-4883-919b-2b81632d4274",
+  "role":"SUPERADMIN"
+}
+
+###
+# @name Get All Users 
+GET {{BASEURL}}/admin/users
+accept: application/json
+content-type: application/json
+Authorization: Bearer {{TOKEN}}
+
