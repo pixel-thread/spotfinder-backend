@@ -1,4 +1,4 @@
-import { EndpointT } from "@/types/endpoints";
+import { EndpointT } from '@/types/endpoints';
 
 /**
  * Available authentication endpoint keys.
@@ -10,11 +10,7 @@ import { EndpointT } from "@/types/endpoints";
  * @property POST_LOGOUT - Logout endpoint
  * @property GET_ME - Get current user information endpoint
  */
-type AuthEndpointKeys =
-  | "POST_LOGIN"
-  | "POST_REGISTER"
-  | "POST_LOGOUT"
-  | "GET_ME";
+type AuthEndpointKeys = 'POST_LOGIN' | 'POST_REGISTER' | 'POST_LOGOUT' | 'GET_ME';
 
 /**
  * Authentication API endpoints configuration.
@@ -28,8 +24,8 @@ type AuthEndpointKeys =
  */
 
 export const AUTH_ENDPOINT: EndpointT<AuthEndpointKeys> = {
-  POST_LOGIN: "/auth",
-  POST_REGISTER: "/auth/register",
-  POST_LOGOUT: "/auth/logout",
-  GET_ME: "/auth",
+  POST_LOGIN: '/auth',
+  POST_REGISTER: '/auth/register',
+  POST_LOGOUT: '/auth/logout',
+  GET_ME: '/auth',
 };
