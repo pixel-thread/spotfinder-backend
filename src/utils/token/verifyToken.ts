@@ -11,5 +11,6 @@ export const verifyToken = async (token: string): Promise<Decoded> => {
     throw new Error("JWT_SECRET is not defined");
   }
   const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
+  console.log(payload);
   return payload as Decoded;
 };

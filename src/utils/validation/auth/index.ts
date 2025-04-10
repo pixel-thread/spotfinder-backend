@@ -1,9 +1,7 @@
 import { z } from "zod";
 
 export const authSchema = z.object({
-  email: z
-    .string({ required_error: "Email is required" })
-    .email({ message: "Invalid email address" }),
+  phone: z.string({ required_error: "Phone is required" }),
   password: z
     .string({ required_error: "Password is required" })
     .min(8, { message: "Min 8 Required" })

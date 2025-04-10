@@ -4,17 +4,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Middleware to validate and manage authentication tokens
- * 
+ *
  * @param req - NextRequest or Request object containing the authorization header
  * @throws {Error} When token is missing or invalid
  * @throws {Error} When token is not found or expired
- * 
+ *
  * @description
  * - Extracts Bearer token from authorization header
  * - Validates token existence and activity status
  * - Automatically extends token expiration if within 3 days of expiry
  * - Token extension adds 7 days to current expiration date
- * 
+ *
  * @example
  * ```typescript
  * // Usage in API route

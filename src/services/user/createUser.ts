@@ -13,14 +13,15 @@ type Props = {
 };
 
 export async function createUser({ data }: Props) {
-  return await prisma.user.create({
+  return await prisma.auth.create({
+    omit: { password: true },
     data: {
-      name: data.name,
       phone: data.phone,
-      auth: {
+      email: data.email,
+      password: await hashPassword(data.password),
+      user: {
         create: {
-          email: data.email,
-          password: await hashPassword(data.password),
+          name: data.name,
         },
       },
     },

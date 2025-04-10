@@ -5,7 +5,7 @@ export async function getUserById({ id }: { id: string }) {
     where: { id },
     omit: { deletedAt: true, updatedAt: true, createdAt: true },
     include: {
-      auth: { omit: { password: true, userId: true } },
+      auth: { omit: { password: true } },
     },
   });
 }

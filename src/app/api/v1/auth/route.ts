@@ -1,7 +1,6 @@
-import { getAuthByEmail } from "@/services/auth/getAuthByEmail";
 import { handleApiErrors } from "@/utils/errors/handleApiErrors";
 import { authSchema } from "@/utils/validation/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { generateToken } from "@/utils/token/generateToken";
 import { verifyToken } from "@/utils/token/verifyToken";
@@ -10,6 +9,8 @@ import { prisma } from "@/lib/db";
 import { SuccessResponse } from "@/lib/successResponse";
 import { tokenMiddleware } from "@/utils/middleware/tokenMiddleware";
 import { ErrorResponse } from "@/lib/errorResponse";
+import { getAuthByPhone } from "@/services/auth/getAuthByPhone";
+import { addNewToken } from "@/services/token/addNewToken";
 
 /**
  * GET /api/v1/auth
@@ -40,9 +41,9 @@ export async function GET(req: NextRequest) {
     if (!decoded || !decoded.id) {
       return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
-
+    console.log(decoded);
     const user = await getUserById({ id: decoded.id });
-    if (!user || !user.auth?.id) {
+    if (!user) {
       return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = authSchema.parse(await req.json());
 
-    const auth = await getAuthByEmail({ email: body.email });
+    const auth = await getAuthByPhone({ phone: body.phone });
     if (!auth) {
       return ErrorResponse({ message: "User not found", status: 404 });
     }
@@ -105,6 +106,7 @@ export async function POST(req: NextRequest) {
         return SuccessResponse({
           token: existingToken.token,
           message: "Welcome back",
+          data: { userId: auth.userId },
         });
       } else {
         // Token expired, revoke it
@@ -117,21 +119,19 @@ export async function POST(req: NextRequest) {
 
     // Generate and store new token
     const tokenValue = await generateToken({ id: auth.userId });
-    const expiresAt = new Date(now.getTime() + 1000 * 60 * 60 * 24); // 24 hours expiry
 
-    await prisma.token.create({
-      data: {
-        token: tokenValue,
-        authId: auth.id,
-        agent: req.headers.get("user-agent") || "N/A",
-        expiresAt,
-        revoked: false,
-      },
+    await addNewToken({
+      token: tokenValue,
+      authId: auth.id,
+      agent: req.headers.get("user-agent") || "N/A",
     });
+
     const response = SuccessResponse({
       token: tokenValue,
       message: "New token issued",
+      data: { userId: auth.userId },
     });
+
     response.cookies.set("AUTH_TOKEN", tokenValue, {
       path: "/",
     });

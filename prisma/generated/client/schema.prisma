@@ -29,7 +29,6 @@ enum AuthStatus {
 model User {
   id         String    @id @default(uuid())
   name       String
-  phone      String
   isVerified Boolean   @default(false)
   role       Role      @default(USER)
   auth       Auth?
@@ -45,8 +44,9 @@ model Auth {
   id        String     @id @default(uuid())
   email     String     @unique
   password  String
+  phone     String     @unique
   userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id])
   tokens    Token[]
   status    AuthStatus @default(ACTIVE)
   createdAt DateTime   @default(now())
@@ -59,7 +59,7 @@ model Token {
   token      String    @unique
   agent      String
   authId     String
-  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)
+  auth       Auth      @relation(fields: [authId], references: [id])
   issuedAt   DateTime  @default(now())
   expiresAt  DateTime
   lastUsedAt DateTime?
