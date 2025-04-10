@@ -1,15 +1,25 @@
-import { ErrorResponse } from "@/lib/errorResponse";
-import { SuccessResponse } from "@/lib/successResponse";
-import { getUserById } from "@/services/user/getUserById";
-import { updateUserRole } from "@/services/user/updateUserRole";
-import { handleApiErrors } from "@/utils/errors/handleApiErrors";
-import { superAdminMiddleware } from "@/utils/middleware/superAdminMiddleware";
-import { tokenMiddleware } from "@/utils/middleware/tokenMiddleware";
-import { z } from "zod";
+import { ErrorResponse } from '@/lib/errorResponse';
+import { SuccessResponse } from '@/lib/successResponse';
+import { getUserById } from '@/services/user/getUserById';
+import { updateUserRole } from '@/services/user/updateUserRole';
+import { handleApiErrors } from '@/utils/errors/handleApiErrors';
+import { superAdminMiddleware } from '@/utils/middleware/superAdminMiddleware';
+import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
+import { z } from 'zod';
 
 const ModelSchema = z.object({
-  userId: z.string().uuid(),
-  role: z.enum(["SUPERADMIN", "USER"]),
+  userId: z
+    .string({
+      required_error: 'User ID is required',
+    })
+    .uuid({
+      message: 'User ID must be a valid UUID',
+    }),
+  role: z
+    .enum(['SUPERADMIN', 'USER'], {
+      required_error: 'Role is required',
+    })
+    .default('USER'),
 });
 
 export async function PATCH(req: Request) {
@@ -23,12 +33,12 @@ export async function PATCH(req: Request) {
     const user = await getUserById({ id: body.userId });
 
     if (!user) {
-      return ErrorResponse({ message: "User not found", status: 404 });
+      return ErrorResponse({ message: 'User not found', status: 404 });
     }
 
     if (user.role === body.role) {
       return ErrorResponse({
-        message: "User already has this role",
+        message: 'User already has this role',
         status: 400,
       });
     }
@@ -36,13 +46,13 @@ export async function PATCH(req: Request) {
     const updatedUser = await updateUserRole({ data: body });
 
     if (!updatedUser) {
-      return ErrorResponse({ message: "User not found", status: 404 });
+      return ErrorResponse({ message: 'User not found', status: 404 });
     }
 
     return SuccessResponse({
       data: updatedUser,
       status: 200,
-      message: "User updated successfully",
+      message: 'User updated successfully',
     });
   } catch (error) {
     return handleApiErrors(error);
