@@ -1,5 +1,5 @@
-import { env } from "@/env";
-import { JWTPayload, jwtVerify } from "jose";
+import { env } from '@/env';
+import { JWTPayload, jwtVerify } from 'jose';
 
 interface Decoded extends JWTPayload {
   id: string;
@@ -8,9 +8,8 @@ interface Decoded extends JWTPayload {
 export const verifyToken = async (token: string): Promise<Decoded> => {
   const secret = env.JWT_SECRET;
   if (!secret) {
-    throw new Error("JWT_SECRET is not defined");
+    throw new Error('JWT_SECRET is not defined');
   }
   const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
-  console.log(payload);
   return payload as Decoded;
 };
