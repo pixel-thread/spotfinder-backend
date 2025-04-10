@@ -9,6 +9,7 @@ import { getUserById } from "@/services/user/getUserById";
 import { prisma } from "@/lib/db";
 import { SuccessResponse } from "@/lib/successResponse";
 import { tokenMiddleware } from "@/utils/middleware/tokenMiddleware";
+import { ErrorResponse } from "@/lib/errorResponse";
 
 /**
  * GET /api/v1/auth
@@ -25,24 +26,24 @@ export async function GET(req: NextRequest) {
   try {
     const authorizationHeader = req.headers.get("authorization");
     if (!authorizationHeader) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
     const token = authorizationHeader.split(" ")[1];
     if (!token) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
     await tokenMiddleware(req);
 
     const decoded = await verifyToken(token);
     if (!decoded || !decoded.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
     const user = await getUserById({ id: decoded.id });
     if (!user || !user.auth?.id) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
     return SuccessResponse({ data: user });
@@ -81,15 +82,12 @@ export async function POST(req: NextRequest) {
 
     const auth = await getAuthByEmail({ email: body.email });
     if (!auth) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return ErrorResponse({ message: "User not found", status: 404 });
     }
 
     const isValid = await bcrypt.compare(body.password, auth.password);
     if (!isValid) {
-      return NextResponse.json(
-        { message: "Password is incorrect, please try again" },
-        { status: 401 },
-      );
+      return ErrorResponse({ message: "Invalid credentials", status: 401 });
     }
 
     const now = new Date();
@@ -104,8 +102,7 @@ export async function POST(req: NextRequest) {
     if (existingToken) {
       if (existingToken.expiresAt > now) {
         // Token is still valid
-        return NextResponse.json({
-          success: true,
+        return SuccessResponse({
           token: existingToken.token,
           message: "Welcome back",
         });
@@ -131,8 +128,7 @@ export async function POST(req: NextRequest) {
         revoked: false,
       },
     });
-    const response = NextResponse.json({
-      success: true,
+    const response = SuccessResponse({
       token: tokenValue,
       message: "New token issued",
     });
