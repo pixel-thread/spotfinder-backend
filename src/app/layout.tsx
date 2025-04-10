@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth";
 import { AuthGuard } from "@/components/guard/authGuard";
+import "./globals.css";
 import { QueryProvider } from "@/components/providers/query";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";

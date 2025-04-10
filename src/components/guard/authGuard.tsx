@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/auth/useAuth";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo, useEffect } from "react";
 import { useCookies } from "react-cookie";
+
 type RoleRoute = {
   url: string;
   role?: string[];
@@ -13,12 +14,12 @@ type RoleRoute = {
 const routeRoles: RoleRoute[] = [
   {
     url: "/dashboard/*",
-    role: ["ADMIN", "SUPERADMIN", "STAFF"],
+    role: ["ADMIN", "SUPERADMIN", "USER"],
     needAuth: true,
   },
   {
     url: "/contact/*",
-    role: ["anonymous", "user", "admin", "superadmin"],
+    role: ["ADMIN", "SUPERADMIN", "USER"],
   },
 ];
 
@@ -45,7 +46,7 @@ export const AuthGuard = ({ children }: PropsT) => {
   const [cookies] = useCookies(["AuthToken"]);
   const isAuthenticated = useMemo(
     () => !!cookies.AuthToken && !!user,
-    [cookies, user],
+    [cookies, user]
   );
   // Show loader during route changes or delays
   useEffect(() => {

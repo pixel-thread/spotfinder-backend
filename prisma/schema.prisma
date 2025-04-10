@@ -18,17 +18,16 @@ enum Role {
   SUPERADMIN
   USER
 }
-
-enum AuthStatus {
-  ACTIVE
-  SUSPENDED
-  BANNED
-  DELETED
+enum VehicleType {
+    TWO_WHEELER
+    FOUR_WHEELER
+    OTHER
 }
-
 model User {
   id         String    @id @default(uuid())
   name       String    @db.VarChar(255)
+  profilePic String?   @db.VarChar(255) @default("")
+  vehicleType VehicleType? @default(TWO_WHEELER) 
   isVerified Boolean   @default(false)
   role       Role      @default(USER)
   auth       Auth?
@@ -49,7 +48,7 @@ model Auth {
   userId    String     @unique
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokens    Token[]
-  status    AuthStatus @default(ACTIVE)
+  status    Status @default(ACTIVE)
   createdAt DateTime   @default(now()) @db.Timestamp()
   updatedAt DateTime   @updatedAt @db.Timestamp()
   deletedAt DateTime?  @db.Timestamp()
