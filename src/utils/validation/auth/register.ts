@@ -4,4 +4,5 @@ import { authSchema } from ".";
 export const registerSchema = authSchema.extend({
   email: z.string({ required_error: "Email is required" }).email(),
   name: z.string({ required_error: "Name is required" }),
+  role: z.enum(["SUPER_ADMIN", "ADMIN", "USER"]).optional(),
 });

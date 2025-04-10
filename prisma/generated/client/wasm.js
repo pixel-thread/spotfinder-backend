@@ -120,6 +120,8 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  profilePic: 'profilePic',
+  vehicleType: 'vehicleType',
   isVerified: 'isVerified',
   role: 'role',
   createdAt: 'createdAt',
@@ -169,15 +171,20 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.VehicleType = exports.$Enums.VehicleType = {
+  TWO_WHEELER: 'TWO_WHEELER',
+  FOUR_WHEELER: 'FOUR_WHEELER',
+  OTHER: 'OTHER'
+};
+
 exports.Role = exports.$Enums.Role = {
   SUPERADMIN: 'SUPERADMIN',
   USER: 'USER'
 };
 
-exports.AuthStatus = exports.$Enums.AuthStatus = {
+exports.Status = exports.$Enums.Status = {
   ACTIVE: 'ACTIVE',
-  SUSPENDED: 'SUSPENDED',
-  BANNED: 'BANNED',
+  INACTIVE: 'INACTIVE',
   DELETED: 'DELETED'
 };
 
