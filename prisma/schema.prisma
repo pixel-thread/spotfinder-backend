@@ -1,15 +1,170 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "./generated/client"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DELETED
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  TEACHING_STAFF
+  NONE_TEACHING
+}
+
+enum AuthStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  DELETED
+}
+
+model School {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  status    Status    @default(ACTIVE)
+  staffs    Staff[]
+  classes   Class[]
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  users     User[]    // Changed from 'User' to 'users' for clarity
+}
+
+model Class {
+  id             String    @id @default(uuid())
+  name           String
+  status         Status    @default(ACTIVE)
+  schoolId       String
+  school         School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classTeacherId String?
+  staff          Staff[]   // Changed from 'staff' to 'staffs' for clarity
+  subjects       Subject[]
+  students       Student[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Staff {
+  id         String    @id @default(uuid())
+  name       String
+  status     Status    @default(ACTIVE)
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateOfJoin DateTime?
+  dateOfExit DateTime?
+  schoolId   String
+  school     School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subjects   Subject[]
+  classes    Class[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  status    Status   @default(ACTIVE)
+  staffId   String
+  staff     Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  results   Result[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id            String   @id @default(uuid())
+  name          String
+  status        Status   @default(ACTIVE)
+  isClassLeader Boolean  @default(false)
+  isAssistant   Boolean  @default(false)
+  schoolId      String
+  school        School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  classId       String
+  class         Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  results       Result[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Result {
+  id        String   @id @default(uuid())
+  studentId String
+  subjectId String
+  score     Float
+  grade     String?
+  term      String
+  comment   String?
+  status    Status   @default(ACTIVE)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, subjectId, term])
+  @@index([studentId])
+  @@index([subjectId])
+}
+
+model User {
+  id         String    @id @default(uuid())
+  name       String
+  phone      String
+  isVerified Boolean   @default(false)
+  role       Role      @default(TEACHING_STAFF)
+  auth       Auth?
+  schoolId   String?
+  school     School?   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  staff      Staff?
+
+  @@index([role])
+  @@index([name])
+}
+
+model Auth {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokens    Token[]
+  status    AuthStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+}
+
+model Token {
+  id         String    @id @default(uuid())
+  token      String    @unique
+  agent      String
+  authId     String
+  auth       Auth      @relation(fields: [authId], references: [id], onDelete: Cascade)
+  issuedAt   DateTime  @default(now())
+  expiresAt  DateTime
+  lastUsedAt DateTime?
+  revoked    Boolean   @default(false)
+  revokedAt  DateTime?
+  revokedBy  String?
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([authId, token])
+  @@index([revokedAt])
+  @@index([lastUsedAt])
 }
