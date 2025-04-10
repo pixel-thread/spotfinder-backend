@@ -13,6 +13,7 @@ export async function addNewToken({ authId, token, agent }: Props) {
       token: token,
       agent: agent,
       expiresAt: addDays(new Date(), 7),
+      lastUsedAt: new Date(),
     },
   });
 }

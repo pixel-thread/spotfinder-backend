@@ -1,6 +1,7 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+"use client";
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -8,14 +9,30 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-
-export function SectionCards() {
+} from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import http from "@/utils/http";
+import { DASHBOARD_ENDPOINT } from "@/lib/constants/endpoints/dashboard";
+import { useAuth } from "@/hooks/auth/useAuth";
+type Dashboard = {
+  activeUsers: number;
+  totalUsers: number;
+};
+export const SectionCards = () => {
+  const { user } = useAuth();
+  const { data } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => http.get<Dashboard>(DASHBOARD_ENDPOINT.GET_DASHBOARD),
+    select: (data) => data.data,
+    enabled: user?.role === "SUPERADMIN",
+  });
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>
+            Total Revenue {data?.totalUsers ?? 0}
+          </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             $1,250.00
           </CardTitle>
@@ -98,5 +115,5 @@ export function SectionCards() {
         </CardFooter>
       </Card>
     </div>
-  )
-}
+  );
+};

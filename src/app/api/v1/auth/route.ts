@@ -34,20 +34,21 @@ export async function GET(req: NextRequest) {
     if (!token) {
       return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
-
-        await tokenMiddleware(req);
+    await tokenMiddleware(req);
 
     const decoded = await verifyToken(token);
     if (!decoded || !decoded.id) {
       return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
-    console.log(decoded);
     const user = await getUserById({ id: decoded.id });
     if (!user) {
       return ErrorResponse({ message: "Unauthorized", status: 401 });
     }
 
-    return SuccessResponse({ data: user });
+    return SuccessResponse({
+      data: user,
+      message: "User verified successfully",
+    });
   } catch (error) {
     return handleApiErrors(error);
   }
@@ -106,13 +107,12 @@ export async function POST(req: NextRequest) {
         return SuccessResponse({
           token: existingToken.token,
           message: "Welcome back",
-          data: { userId: auth.userId },
         });
       } else {
         // Token expired, revoke it
         await prisma.token.update({
           where: { id: existingToken.id },
-          data: { revoked: true },
+          data: { revoked: true, revokedAt: now, revokedBy: auth.userId },
         });
       }
     }
@@ -128,8 +128,7 @@ export async function POST(req: NextRequest) {
 
     const response = SuccessResponse({
       token: tokenValue,
-      message: "New token issued",
-      data: { userId: auth.userId },
+      message: "Login successfully",
     });
 
     response.cookies.set("AUTH_TOKEN", tokenValue, {
