@@ -25,17 +25,17 @@ import { addNewToken } from "@/services/token/addNewToken";
  */
 export async function GET(req: NextRequest) {
   try {
-    // const authorizationHeader = req.headers.get("authorization");
-    // if (!authorizationHeader) {
-    //   return ErrorResponse({ message: "Unauthorized", status: 401 });
-    // }
+    const authorizationHeader = req.headers.get("authorization");
+    if (!authorizationHeader) {
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
+    }
 
-    // const token = authorizationHeader.split(" ")[1];
-    // if (!token) {
-    //   return ErrorResponse({ message: "Unauthorized", status: 401 });
-    // }
+    const token = authorizationHeader.split(" ")[1];
+    if (!token) {
+      return ErrorResponse({ message: "Unauthorized", status: 401 });
+    }
 
-    await tokenMiddleware(req);
+        await tokenMiddleware(req);
 
     const decoded = await verifyToken(token);
     if (!decoded || !decoded.id) {
