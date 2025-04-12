@@ -1,5 +1,6 @@
 @TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjZlYzgxZWI0LTM2NWItNDMzNC1iODdiLTllZDJhYjhmOWRiMCIsImlhdCI6MTc0NDI3MzE2OX0.muAqeuBhwNyxyZgTt1mkbUSxNfdM9UTZSJyDEKV31mk
-@BASEURL=http://localhost:3000/api/v1
+@BASEURL=
+https://jyrwa-parkingi.vercel.app/api/v1
 
 ###
 # @name Login 

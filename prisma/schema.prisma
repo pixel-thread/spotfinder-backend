@@ -24,6 +24,7 @@ enum VehicleType {
   TWO_WHEELER
   THREE_WHEELER
   FOUR_WHEELER
+  SIX_WHEELER
   OTHER
 }
 
@@ -81,4 +82,18 @@ model Token {
   @@index([revokedAt])
   @@index([lastUsedAt])
   @@index([deletedAt])
+}
+
+model ParkingLot {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  address   String
+  isFull    Boolean   @default(false)
+  openAt    String
+  closeAt   String
+  status    Status    @default(ACTIVE)
+  price     Float
+  deletedAt DateTime? @db.Timestamp()
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @updatedAt @db.Timestamp()
 }

@@ -10,9 +10,9 @@
     "prepare": "husky",
     "db:format": "npx prisma format",
     "db:push": "npx prisma db push",
-    "db:generate": "npx prisma generate",
+    "db:generate": "prisma generate",
     "format": "prettier --write .",
-    "postinstall": "prisma generate && npm rebuild lightningcss"
+    "postinstall": "prisma generate"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
