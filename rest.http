@@ -1,6 +1,5 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjZlYzgxZWI0LTM2NWItNDMzNC1iODdiLTllZDJhYjhmOWRiMCIsImlhdCI6MTc0NDI3MzE2OX0.muAqeuBhwNyxyZgTt1mkbUSxNfdM9UTZSJyDEKV31mk
-@BASEURL=
-https://jyrwa-parkingi.vercel.app/api/v1
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjhjZmJkNGQzLWY3YjItNDUwYi1hYjE4LTIzNGMyODEyZGJlMCIsImlhdCI6MTc0NDQzODAzMn0.eH3LKHm00wnOCMKY35o2i93dt19-CB_1na-eLTq2EJo
+@BASEURL=https://jyrwa-parkingi.vercel.app/api/v1
 
 ###
 # @name Login 
@@ -9,7 +8,7 @@ accept: application/json
 content-type: application/json
 
 {
-  "phone":"8787572702",
+  "phone": "8837011018",
   "password": "123Clashofclan@"
 }
 
@@ -34,9 +33,9 @@ accept: application/json
 content-type: application/json
 
 {
-  "email": "test3@gmail.com",
-  "name": "Test",
-  "phone": "8787572703",
+  "email": "bimon@gmail.com",
+  "name": "MON",
+  "phone": "8837011018",
   "password": "123Clashofclan@"
 }
 

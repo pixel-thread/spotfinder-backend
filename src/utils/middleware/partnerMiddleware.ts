@@ -3,7 +3,7 @@ import { verifyToken } from '../token/verifyToken';
 import { getUserById } from '@/services/user/getUserById';
 import { prisma } from '@lib/db';
 
-export async function adminMiddleware(req: NextRequest | Request) {
+export async function partnerMiddleware(req: NextRequest | Request) {
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.split(' ')[1];
 
