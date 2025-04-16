@@ -1,5 +1,9 @@
 import { prisma } from '@/lib/db';
+import { Prisma } from '@schema/index';
 
-export const getAllParking = async () => {
-  return await prisma.parkingLot.findMany();
+type Props = {
+  status: Prisma.ParkingLotCreateInput['status'];
+};
+export const getAllParking = async ({ status }: Props = { status: 'ACTIVE' }) => {
+  return await prisma.parkingLot.findMany({ where: { status: status } });
 };

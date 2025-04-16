@@ -5,6 +5,21 @@ import { getParkingLotById } from '@/services/parking/getParkingLotById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { superAdminMiddleware } from '@/utils/middleware/superAdminMiddleware';
 
+export async function GET(req: Request, { params }: { params: Promise<{ parkingId: string }> }) {
+  try {
+    const { parkingId } = await params;
+    if (!parkingId) {
+      return ErrorResponse({ message: 'Parking ID is required' });
+    }
+    const isParkingExist = await getParkingLotById({ id: parkingId });
+    if (!isParkingExist) {
+      return ErrorResponse({ message: 'Parking Lot not found', status: 404 });
+    }
+    return SuccessResponse({ data: isParkingExist, message: 'Parking fetch successfully' });
+  } catch (error) {
+    return handleApiErrors(error);
+  }
+}
 export async function DELETE(req: Request, { params }: { params: Promise<{ parkingId: string }> }) {
   try {
     await superAdminMiddleware(req);

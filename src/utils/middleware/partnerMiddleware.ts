@@ -42,7 +42,7 @@ export async function partnerMiddleware(req: NextRequest | Request) {
     });
   }
 
-  if (user.role !== 'SUPERADMIN' && user.role !== 'PARTNER') {
+  if (user.role !== 'SUPER_ADMIN' && user.role !== 'PARTNER') {
     throw new Error('Unauthorized: User is not a SUPERADMIN | PARTNER');
   }
 

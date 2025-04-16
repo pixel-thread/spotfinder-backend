@@ -2,6 +2,9 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -12,7 +15,10 @@
     "db:push": "npx prisma db push",
     "db:generate": "prisma generate",
     "format": "prettier --write .",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "seed:parking": "ts-node prisma/parking-seed.ts",
+    "seed:plans": "ts-node prisma/plan-seed.ts",
+    "seed:users": "ts-node prisma/user-seed.ts"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
@@ -43,6 +49,7 @@
     "eslint-config-next": "15.3.0",
     "husky": "^9.1.7",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

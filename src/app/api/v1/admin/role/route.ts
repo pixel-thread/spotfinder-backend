@@ -16,7 +16,7 @@ const ModelSchema = z.object({
       message: 'User ID must be a valid UUID',
     }),
   role: z
-    .enum(['SUPERADMIN', 'USER'], {
+    .enum(['SUPER_ADMIN', 'USER', 'PARTNER'], {
       required_error: 'Role is required',
     })
     .default('USER'),
