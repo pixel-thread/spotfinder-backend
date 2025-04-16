@@ -1,4 +1,4 @@
-import { PrismaClient, Status } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -16,7 +16,6 @@ async function main() {
       price: 0,
       noOfParkingSlot: 1,
       duration: 30,
-      status: Status.ACTIVE,
     },
     {
       name: 'Premium',
@@ -24,7 +23,6 @@ async function main() {
       price: 99.99,
       noOfParkingSlot: 10, // Updated to include 10 slots
       duration: 30,
-      status: Status.ACTIVE,
     },
   ];
 

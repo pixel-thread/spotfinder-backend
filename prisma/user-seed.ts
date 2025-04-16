@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -14,7 +14,7 @@ async function main() {
   // Define users
   type User = {
     name: string;
-    role: Prisma.UserCreateInput['role'];
+    role: 'SUPER_ADMIN' | 'USER' | 'PARTNER';
     isVerified: boolean;
     email: string;
     password: string;
