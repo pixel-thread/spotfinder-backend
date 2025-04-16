@@ -5,20 +5,20 @@ import { Prisma } from '@schema/index';
 import { getPagination, PaginationParams } from '@/utils/pagination';
 
 type GetAllParkingProps = PaginationParams & {
-  status: Prisma.ParkingLotCreateInput['status'];
+  where?: Prisma.ParkingLotWhereInput;
 };
 
-export const getAllParking = async ({ status, page }: GetAllParkingProps) => {
+export const getAllParking = async ({ page, where }: GetAllParkingProps) => {
   const { skip, take } = getPagination({ page });
   return await prisma.$transaction([
     prisma.parkingLot.findMany({
-      where: { status },
+      where,
       skip,
       take,
       orderBy: { createdAt: 'desc' },
     }),
     prisma.parkingLot.count({
-      where: { status },
+      where,
       orderBy: { createdAt: 'desc' },
     }),
   ]);

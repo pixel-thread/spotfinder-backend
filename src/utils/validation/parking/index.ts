@@ -15,5 +15,5 @@ export const parkingSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE').optional(),
   features: z.array(z.string()),
   gallery: z.array(z.string()),
-  userId: z.string().uuid().optional().nullable(),
+  userId: z.string().uuid(),
 });

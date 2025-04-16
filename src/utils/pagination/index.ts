@@ -19,6 +19,7 @@ export function getPagination({
   pageSize = DEFAULT_PAGE_SIZE,
 }: PaginationParams): PaginationResult {
   const parsedPage = typeof page === 'string' ? parseInt(page, 10) : page;
+
   const currentPage = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : DEFAULT_PAGE;
 
   const size = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : DEFAULT_PAGE_SIZE;

@@ -1,4 +1,4 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImY3MTQyMjIwLTczNDEtNDc3Yy1iYWE1LTYxNTQzM2EwNmJmNiIsImlhdCI6MTc0NDc3NTk5MH0.7mDmrUMr4Gxe-57_Mkek1rfiAk_THrLzizURX3mgUdI
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImY3MTQyMjIwLTczNDEtNDc3Yy1iYWE1LTYxNTQzM2EwNmJmNiIsImlhdCI6MTc0NDgyMDgwMH0.nZ3fCl7isMcOmbT2akKrYKWZdgNw2hke3MJQfd9p3xI
 @BASEURL=http://localhost:3000/api/v1
 
 ###
@@ -72,6 +72,12 @@ accept: application/json
 content-type: application/json
 
 ###
+# @name Search parking 
+GET {{BASEURL}}/parking/search?q=ev&status=active&page=1
+accept: application/json
+content-type: application/json
+
+###
 # @name Get Parking By Id 
 GET {{BASEURL}}/parking/a4d7b7e6-6f79-4f21-8ef0-d23b93445c93
 accept: application/json
@@ -104,7 +110,7 @@ content-type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Greenview Parking Plaza",
+  "name": "TEST",
   "address": "42 Elm Street, Midtown",
   "price": 6.5,
   "rating": ["c1a3d62e-b5f9-48be-bc0f-ea4dcae0db76", "5df02eb5-3a7f-45c4-9274-18d8679eb795"],
@@ -120,5 +126,5 @@ Authorization: Bearer {{TOKEN}}
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?ixlib=rb-4.0.3",
     "https://images.unsplash.com/photo-1590674899484-13d6c7094a9f?ixlib=rb-4.0.3"
   ],
-  "userId":"72df3f34-c591-4883-919b-2b81632d4274"
+  "userId":"f7142220-7341-477c-baa5-615433a06bf6"
 }
