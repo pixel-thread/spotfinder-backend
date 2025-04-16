@@ -4,6 +4,7 @@ import { getAllParking } from '@/services/parking/getAllParking';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { partnerMiddleware } from '@/utils/middleware/partnerMiddleware';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
+import { getMeta } from '@/utils/pagination/getMeta';
 import { parkingSchema } from '@/utils/validation/parking';
 import { Prisma } from '@schema/index';
 import { NextRequest } from 'next/server';
@@ -13,20 +14,16 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const status = searchParams.get('status') || 'ACTIVE';
-    // const page = parseInt(searchParams.get('page') || '1');
-    // const limit = parseInt(searchParams.get('limit') || '10');
-    // const search = searchParams.get('search') || '';
+    const page = searchParams.get('page') || '1';
 
-    const parking = await getAllParking({
+    const [parking, totalParking] = await getAllParking({
       status: status as Status,
-      // page,
-      // limit,
-      // search
+      page: page,
     });
 
     return SuccessResponse({
       data: parking,
-      // meta: parking.meta,
+      meta: getMeta({ total: totalParking, currentPage: page }),
       message: 'Successfully fetched parking lots',
     });
   } catch (error) {

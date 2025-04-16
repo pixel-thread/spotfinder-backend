@@ -67,7 +67,7 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 # @name Get All parking 
-GET {{BASEURL}}/parking
+GET {{BASEURL}}/parking?page=3
 accept: application/json
 content-type: application/json
 

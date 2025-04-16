@@ -1,9 +1,8 @@
 import { prisma } from '@/lib/db';
-import { Prisma } from '@prisma/client';
 
 type Props = {
   userId: string;
-  status?: Prisma.PartnerRequestCreateInput['status'];
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
 };
 
 export async function getRequestedPartnerShipByUserId({ userId, status = 'PENDING' }: Props) {
