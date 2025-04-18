@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/db";
-import { Prisma } from "@schema/index";
+import { prisma } from '@/lib/db';
+import { Prisma } from '@schema/index';
 
 type Props = {
   data: {
     userId: string;
-    role: Prisma.UserCreateInput["role"];
+    role: Prisma.UserCreateInput['role'];
   };
 };
 

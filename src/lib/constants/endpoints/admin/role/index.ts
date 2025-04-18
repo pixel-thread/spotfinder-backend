@@ -1,4 +1,4 @@
-import { EndpointT } from "@/types/endpoints";
+import { EndpointT } from '@/types/endpoints';
 
 /**
  * Admin role management endpoint keys.
@@ -6,7 +6,7 @@ import { EndpointT } from "@/types/endpoints";
  *
  * @property PATCH_ROLE - Endpoint for updating user roles
  */
-type AdminRoleEndpointKeys = "PATCH_ROLE";
+type AdminRoleEndpointKeys = 'PATCH_ROLE';
 
 /**
  * Admin role management API endpoints configuration.
@@ -19,5 +19,5 @@ type AdminRoleEndpointKeys = "PATCH_ROLE";
  * ```
  */
 export const ADMIN_ROLE_ENDPOINT: EndpointT<AdminRoleEndpointKeys> = {
-  PATCH_ROLE: "/admin/role",
+  PATCH_ROLE: '/admin/role',
 };

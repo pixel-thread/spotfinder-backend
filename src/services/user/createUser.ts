@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/db";
-import { hashPassword } from "@/utils/hash/hashPassword";
+import { prisma } from '@/lib/db';
+import { hashPassword } from '@/utils/hash/hashPassword';
 
 type DataType = {
   name: string;

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/db";
-import { addDays } from "@/utils/token/addDays";
+import { prisma } from '@/lib/db';
+import { addDays } from '@/utils/token/addDays';
 
 type Props = {
   id: string;

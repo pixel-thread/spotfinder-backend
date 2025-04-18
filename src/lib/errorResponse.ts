@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { HttpStatusCode } from "axios";
+import { NextResponse } from 'next/server';
+import { HttpStatusCode } from 'axios';
 
 interface Props<T> {
   message?: string;
@@ -8,15 +8,11 @@ interface Props<T> {
   data?: T | unknown | null;
 }
 
-export const ErrorResponse = <T>({
-  message = "Unknown error",
-  error,
-  status = 500,
-}: Props<T>) => {
+export const ErrorResponse = <T>({ message = 'Unknown error', error, status = 500 }: Props<T>) => {
   return NextResponse.json(
     {
       success: false,
-      message: message || "Unknown error",
+      message: message || 'Unknown error',
       error: error,
       timeStamp: new Date().toISOString(),
     },

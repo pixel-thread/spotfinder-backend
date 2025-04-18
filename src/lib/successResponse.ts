@@ -1,6 +1,6 @@
-import { MetaT } from "@/types/meta";
-import { HttpStatusCode } from "axios";
-import { NextResponse } from "next/server";
+import { MetaT } from '@/types/meta';
+import { HttpStatusCode } from 'axios';
+import { NextResponse } from 'next/server';
 
 interface Props<T> {
   message?: string;
@@ -11,7 +11,7 @@ interface Props<T> {
 }
 
 export const SuccessResponse = <T>({
-  message = "Request successful",
+  message = 'Request successful',
   data,
   status = 200,
   meta,
@@ -20,7 +20,7 @@ export const SuccessResponse = <T>({
   return NextResponse.json(
     {
       success: true,
-      message: message || "Request successful",
+      message: message || 'Request successful',
       data: data,
       token: token,
       meta: meta,

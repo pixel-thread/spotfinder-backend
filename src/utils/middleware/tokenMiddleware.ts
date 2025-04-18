@@ -1,6 +1,6 @@
-import { extendTokenExpireDateByDays } from "@/services/token/extendTokenExpireDateByDays";
-import { getActiveToken } from "@/services/token/getActiveToken";
-import { NextRequest, NextResponse } from "next/server";
+import { extendTokenExpireDateByDays } from '@/services/token/extendTokenExpireDateByDays';
+import { getActiveToken } from '@/services/token/getActiveToken';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * Middleware to validate and manage authentication tokens
@@ -22,16 +22,16 @@ import { NextRequest, NextResponse } from "next/server";
  * ```
  */
 export async function tokenMiddleware(req: NextRequest | Request) {
-  const authHeader = req.headers.get("authorization");
-  const token = authHeader?.split(" ")[1];
+  const authHeader = req.headers.get('authorization');
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
-    throw new Error("Unauthorized");
+    throw new Error('Unauthorized');
   }
 
   const activeToken = await getActiveToken({ token });
   if (!activeToken) {
-    throw new Error("Unauthorized", { cause: "Token not found or expire" });
+    throw new Error('Unauthorized', { cause: 'Token not found or expire' });
   }
 
   // Calculate time difference
