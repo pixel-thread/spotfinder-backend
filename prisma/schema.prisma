@@ -102,7 +102,6 @@ model Plan {
   createdAt    DateTime      @default(now()) @db.Timestamp()
   updatedAt    DateTime      @updatedAt @db.Timestamp()
   deletedAt    DateTime?     @db.Timestamp()
-  transactions Transaction[]
   User         User?         @relation(fields: [userId], references: [id])
   userId       String?
 
@@ -157,8 +156,6 @@ model ParkingLot {
 
 model Transaction {
   id        String   @id @default(uuid())
-  planId    String
-  plan      Plan     @relation(fields: [planId], references: [id])
   amount    Float
   status    String   @db.VarChar(50)
   createdAt DateTime @default(now()) @db.Timestamp()

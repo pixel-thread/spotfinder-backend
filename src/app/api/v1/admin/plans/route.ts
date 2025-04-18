@@ -4,7 +4,7 @@ import { createPlan } from '@/services/plan/createPlan';
 import { getPlans } from '@/services/plan/getPlans';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { superAdminMiddleware } from '@/utils/middleware/superAdminMiddleware';
-import { planSchama } from '@/utils/validation/plan';
+import { planSchema } from '@/utils/validation/plan';
 
 export async function POST(req: Request) {
   try {
@@ -12,10 +12,10 @@ export async function POST(req: Request) {
     if (!isAdmin) {
       return isAdmin;
     }
-    const body = planSchama.parse(await req.json());
+    const body = planSchema.parse(await req.json());
     const plans = await getPlans();
     if (plans.length === 0) {
-      const plan = await createPlan({ price: body.price });
+      const plan = await createPlan({ data: body });
       return SuccessResponse({
         message: 'Plan created successfully',
         data: plan,

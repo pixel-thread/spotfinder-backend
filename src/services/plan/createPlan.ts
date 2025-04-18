@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/db';
-
-export async function createPlan({ price }: { price: number }) {
-  return await prisma.plan.create({ data: { price } });
+import { Prisma } from '@schema/index';
+type CreatePlanProps = {
+  data: Prisma.PlanCreateInput;
+};
+export async function createPlan({ data }: CreatePlanProps) {
+  return await prisma.plan.create({ data: data });
 }
