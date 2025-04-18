@@ -11,7 +11,12 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const currentPage = searchParams.get('page') || '1';
 
-    await superAdminMiddleware(req);
+    const isAdminFalse = await superAdminMiddleware(req);
+
+    if (isAdminFalse) {
+      return isAdminFalse;
+    }
+
     const [users, total] = await getAllUsers({ page: currentPage });
     if (!users) {
       return ErrorResponse({ message: 'User not found', status: 404 });

@@ -128,3 +128,19 @@ Authorization: Bearer {{TOKEN}}
   ],
   "userId":"f7142220-7341-477c-baa5-615433a06bf6"
 }
+
+###
+# @name  Plans 
+GET {{BASEURL}}/plan
+accept: application/json
+content-type: application/json
+
+###
+# @name  create plan 
+POST {{BASEURL}}/admin/plans
+accept: application/json
+content-type: application/json
+
+{
+  "price": 58
+}

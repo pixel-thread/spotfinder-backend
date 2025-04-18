@@ -29,21 +29,20 @@ enum VehicleType {
 }
 
 model User {
-  id              String             @id @default(uuid())
-  name            String             @db.VarChar(255)
-  profilePic      String?            @db.VarChar(255)
-  vehicleType     VehicleType?       @default(TWO_WHEELER)
-  isVerified      Boolean            @default(false)
-  role            Role               @default(USER)
-  auth            Auth?
-  parkingLots     ParkingLot[]
-  subscriptions   PlanSubscription[]
-  partnerRequests PartnerRequest[]
-  notifications   Notification[]
-  bookings        Booking[]
-  createdAt       DateTime           @default(now()) @db.Timestamp()
-  updatedAt       DateTime           @updatedAt @db.Timestamp()
-  deletedAt       DateTime?          @db.Timestamp()
+  id          String        @id @default(uuid())
+  name        String        @db.VarChar(255)
+  profilePic  String?       @db.VarChar(255)
+  vehicleType VehicleType?  @default(TWO_WHEELER)
+  isVerified  Boolean       @default(false)
+  role        Role          @default(USER)
+  auth        Auth?
+  parkingLots ParkingLot[]
+  planId      String?
+  plan        Plan[]
+  createdAt   DateTime      @default(now()) @db.Timestamp()
+  updatedAt   DateTime      @updatedAt @db.Timestamp()
+  deletedAt   DateTime?     @db.Timestamp()
+  ParkingSlot ParkingSlot[]
 
   @@index([role])
   @@index([name])
@@ -95,89 +94,60 @@ enum PlanStatus {
   CANCELLED
 }
 
-model ParkingLotPlan {
-  id              String             @id @default(uuid())
-  name            String
-  description     String             @db.Text
-  price           Float
-  noOfParkingSlot Int                @default(1)
-  duration        Int                @default(30) // Duration in days 
-  status          Status             @default(ACTIVE)
-  createdAt       DateTime           @default(now()) @db.Timestamp()
-  updatedAt       DateTime           @updatedAt @db.Timestamp()
-  deletedAt       DateTime?          @db.Timestamp()
-  subscriptions   PlanSubscription[]
+model Plan {
+  id           String        @id @default(uuid())
+  price        Float
+  duration     Int           @db.Integer
+  status       Status        @default(ACTIVE)
+  createdAt    DateTime      @default(now()) @db.Timestamp()
+  updatedAt    DateTime      @updatedAt @db.Timestamp()
+  deletedAt    DateTime?     @db.Timestamp()
+  transactions Transaction[]
+  User         User?         @relation(fields: [userId], references: [id])
+  userId       String?
 
-  @@index([status])
   @@index([price])
-  @@index([name])
 }
 
 model ParkingSlot {
-  id             String            @id @default(uuid())
-  slotNumber     String
-  isOccupied     Boolean           @default(false)
-  type           VehicleType       @default(TWO_WHEELER)
-  parkingLot     ParkingLot        @relation(fields: [parkingLotId], references: [id])
-  parkingLotId   String
-  subscription   PlanSubscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId String?
-  bookings       Booking[]
-  createdAt      DateTime          @default(now()) @db.Timestamp()
-  updatedAt      DateTime          @updatedAt @db.Timestamp()
-  deletedAt      DateTime?         @db.Timestamp()
+  id           String      @id @default(uuid())
+  slotNumber   String
+  isOccupied   Boolean     @default(false)
+  type         VehicleType @default(TWO_WHEELER)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  parkingLot   ParkingLot  @relation(fields: [parkingLotId], references: [id])
+  parkingLotId String
+  createdAt    DateTime    @default(now()) @db.Timestamp()
+  updatedAt    DateTime    @updatedAt @db.Timestamp()
+  deletedAt    DateTime?   @db.Timestamp()
 
   @@unique([parkingLotId, slotNumber])
   @@index([isOccupied])
   @@index([type])
 }
 
-model PlanSubscription {
-  id           String         @id @default(uuid())
-  plan         ParkingLotPlan @relation(fields: [planId], references: [id])
-  planId       String
-  partner      User           @relation(fields: [partnerId], references: [id])
-  partnerId    String
-  parkingLot   ParkingLot     @relation(fields: [parkingLotId], references: [id])
-  parkingLotId String
-  slots        ParkingSlot[]
-  startDate    DateTime       @db.Timestamp()
-  endDate      DateTime       @db.Timestamp()
-  status       PlanStatus     @default(ACTIVE)
-  autoRenew    Boolean        @default(false)
-  createdAt    DateTime       @default(now()) @db.Timestamp()
-  updatedAt    DateTime       @updatedAt @db.Timestamp()
-  cancelledAt  DateTime?      @db.Timestamp()
-
-  @@index([planId])
-  @@index([partnerId])
-  @@index([parkingLotId])
-  @@index([status])
-  @@index([endDate])
-}
-
 model ParkingLot {
-  id            String             @id @default(uuid())
-  name          String
-  address       String
-  price         Int                @default(30)
-  rating        String[]           @default([])
-  distance      String?
-  available     Int
-  totalSpots    Int
-  openHours     String             @default("24/7")
-  description   String
-  image         String?
-  status        Status             @default(ACTIVE)
-  features      String[]           @default([])
-  gallery       String[]           @default([])
-  User          User?              @relation(fields: [userId], references: [id])
-  userId        String?
-  slots         ParkingSlot[]
-  subscriptions PlanSubscription[]
-  deletedAt     DateTime?          @db.Timestamp()
-  createdAt     DateTime           @default(now()) @db.Timestamp()
-  updatedAt     DateTime           @updatedAt @db.Timestamp()
+  id          String        @id @default(uuid())
+  name        String
+  address     String
+  price       Int           @default(30)
+  rating      String[]      @default([])
+  distance    String?
+  available   Int
+  totalSpots  Int
+  openHours   String        @default("24/7")
+  description String
+  image       String?
+  status      Status        @default(ACTIVE)
+  features    String[]      @default([])
+  gallery     String[]      @default([])
+  User        User?         @relation(fields: [userId], references: [id])
+  userId      String?
+  slots       ParkingSlot[]
+  deletedAt   DateTime?     @db.Timestamp()
+  createdAt   DateTime      @default(now()) @db.Timestamp()
+  updatedAt   DateTime      @updatedAt @db.Timestamp()
 
   @@index([status])
   @@index([deletedAt])
@@ -185,105 +155,12 @@ model ParkingLot {
   @@index([price])
 }
 
-enum PartnerRequestStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-model PartnerRequest {
-  id          String               @id @default(uuid())
-  user        User                 @relation(fields: [userId], references: [id])
-  userId      String
-  description String               @db.Text
-  status      PartnerRequestStatus @default(PENDING)
-  reviewedBy  String?
-  reviewNotes String?              @db.Text
-  createdAt   DateTime             @default(now()) @db.Timestamp()
-  updatedAt   DateTime             @updatedAt @db.Timestamp()
-  reviewedAt  DateTime?            @db.Timestamp()
-
-  @@index([userId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-enum NotificationType {
-  PARTNER_REQUEST_APPROVED
-  PARTNER_REQUEST_REJECTED
-  PARKING_LOT_ADDED
-  SUBSCRIPTION_CREATED
-  SUBSCRIPTION_EXPIRED
-  SYSTEM_NOTIFICATION
-  USER_NOTIFICATION
-}
-
-model Notification {
-  id        String           @id @default(uuid())
-  user      User             @relation(fields: [userId], references: [id])
-  userId    String
-  title     String
-  message   String           @db.Text
-  type      NotificationType
-  isRead    Boolean          @default(false)
-  data      Json? // Additional data related to the notification
-  createdAt DateTime         @default(now()) @db.Timestamp()
-  readAt    DateTime?        @db.Timestamp()
-
-  @@index([userId])
-  @@index([isRead])
-  @@index([type])
-  @@index([createdAt])
-}
-
-enum BookingStatus {
-  RESERVED
-  ACTIVE
-  COMPLETED
-  CANCELLED
-}
-
-model Booking {
-  id            String        @id @default(uuid())
-  parkingSlot   ParkingSlot   @relation(fields: [parkingSlotId], references: [id])
-  parkingSlotId String
-  user          User          @relation(fields: [userId], references: [id])
-  userId        String
-  startTime     DateTime      @db.Timestamp()
-  endTime       DateTime      @db.Timestamp()
-  vehicleNumber String?
-  status        BookingStatus @default(RESERVED)
-  payment       Payment?
-  createdAt     DateTime      @default(now()) @db.Timestamp()
-  updatedAt     DateTime      @updatedAt @db.Timestamp()
-  cancelledAt   DateTime?     @db.Timestamp()
-
-  @@index([userId])
-  @@index([parkingSlotId])
-  @@index([status])
-  @@index([startTime, endTime])
-}
-
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-model Payment {
-  id            String        @id @default(uuid())
-  booking       Booking       @relation(fields: [bookingId], references: [id])
-  bookingId     String        @unique
-  amount        Float
-  paymentMethod String?
-  transactionId String?
-  status        PaymentStatus @default(PENDING)
-  createdAt     DateTime      @default(now()) @db.Timestamp()
-  updatedAt     DateTime      @updatedAt @db.Timestamp()
-  completedAt   DateTime?     @db.Timestamp()
-
-  @@index([status])
-  @@index([bookingId])
-  @@index([transactionId])
+model Transaction {
+  id        String   @id @default(uuid())
+  planId    String
+  plan      Plan     @relation(fields: [planId], references: [id])
+  amount    Float
+  status    String   @db.VarChar(50)
+  createdAt DateTime @default(now()) @db.Timestamp()
+  updatedAt DateTime @updatedAt @db.Timestamp()
 }

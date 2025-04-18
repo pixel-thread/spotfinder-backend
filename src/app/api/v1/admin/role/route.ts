@@ -4,7 +4,6 @@ import { getUserById } from '@/services/user/getUserById';
 import { updateUserRole } from '@/services/user/updateUserRole';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { superAdminMiddleware } from '@/utils/middleware/superAdminMiddleware';
-import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { z } from 'zod';
 
 const ModelSchema = z.object({
@@ -24,10 +23,13 @@ const ModelSchema = z.object({
 
 export async function PATCH(req: Request) {
   try {
-    await tokenMiddleware(req);
-
-    await superAdminMiddleware(req);
-
+    const isAdminFalse = await superAdminMiddleware(req);
+    if (isAdminFalse) {
+      return ErrorResponse({
+        message: 'UnAuthorize',
+        status: 401,
+      });
+    }
     const body = ModelSchema.parse(await req.json());
 
     const user = await getUserById({ id: body.userId });

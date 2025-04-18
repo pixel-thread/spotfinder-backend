@@ -1,30 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '../token/verifyToken';
 import { getUserById } from '@/services/user/getUserById';
 import { prisma } from '@/lib/db';
+import { ErrorResponse } from '@/lib/errorResponse';
 
-export async function superAdminMiddleware(req: NextRequest | Request) {
+export async function superAdminMiddleware(req: Request) {
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.split(' ')[1];
-
+  console.log(token);
   if (!token) {
-    throw new Error('Unauthorized', {
-      cause: { status: 401 },
+    return ErrorResponse({
+      status: 401,
+      message: 'Unauthorized',
     });
   }
 
   const decoded = await verifyToken(token);
 
   if (!decoded?.id) {
-    throw new Error('Unauthorized', {
-      cause: { status: 401 },
+    return ErrorResponse({
+      status: 401,
+      message: 'Unauthorized',
     });
   }
 
   const user = await getUserById({ id: decoded.id });
 
   if (!user) {
-    throw new Error('User not found');
+    return ErrorResponse({
+      status: 401,
+      message: 'Unauthorized',
+    });
   }
 
   const tokenRecord = await prisma.token.findFirst({
@@ -37,15 +42,16 @@ export async function superAdminMiddleware(req: NextRequest | Request) {
   });
 
   if (!tokenRecord) {
-    throw new Error('Unauthorized', {
-      cause: { status: 401 },
+    return ErrorResponse({
+      status: 401,
+      message: 'Unauthorized',
     });
   }
 
   if (user.role !== 'SUPER_ADMIN') {
-    throw new Error('Unauthorized: User is not a SUPERADMIN');
+    return ErrorResponse({
+      status: 401,
+      message: 'Unauthorized',
+    });
   }
-
-  // Pass through if everything checks out
-  return NextResponse.next();
 }

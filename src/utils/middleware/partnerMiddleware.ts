@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { verifyToken } from '../token/verifyToken';
 import { getUserById } from '@/services/user/getUserById';
 import { prisma } from '@lib/db';
 
-export async function partnerMiddleware(req: NextRequest | Request) {
+export async function partnerMiddleware(req: Request) {
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.split(' ')[1];
 
