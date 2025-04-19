@@ -1,0 +1,28 @@
+###
+# @name REGISTER 
+POST {{NEXT_PUBLIC_API_URL}}/auth/register
+
+{
+  "email": "{{$randomInt}}@{{$randomInt}}.com",
+  "name": "{{$uuid}}",
+  "phone": "{{$randomInt}}001",
+  "password": "123Clashofclan@"
+}
+
+###
+# @name LOGIN
+POST {{NEXT_PUBLIC_API_URL}}/auth
+
+{
+  "phone": "{{LOGIN_PHONE_SUPER_ADMIN}}",
+  "password": "{{LOGIN_PASSWORD}}"
+}
+
+###
+# @name USER 
+GET {{NEXT_PUBLIC_API_URL}}/auth
+
+###
+# @name LOGOUT
+POST {{NEXT_PUBLIC_API_URL}}/auth/logout
+
