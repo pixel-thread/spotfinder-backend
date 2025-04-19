@@ -1,6 +1,6 @@
 ###
 # @name Get All parking 
-GET {{NEXT_PUBLIC_API_URL}}/parking?page=1
+GET {{NEXT_PUBLIC_API_URL}}/parking?page=2
 
 ###
 # @name Search parking 
@@ -8,7 +8,7 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/search?q=ev&status=active&page=1
 
 ###
 # @name Get Parking By Id - {parkingId}
-GET {{NEXT_PUBLIC_API_URL}}/parking/caba6375-f652-40bf-83ac-1dc5f5530686
+GET {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2
 
 ###
 # @name Get Parking By User Id - {userId}
@@ -19,3 +19,15 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/user/96a79764-c3c2-45e8-95a9-c3521fd9a6d9
 POST {{NEXT_PUBLIC_API_URL}}/parking
 
 < ./data/parking/index.json
+
+###
+# @name Update Parking By Id 
+PUT {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2
+
+< ./data/parking/index.json
+
+###
+# @name toggle parking rating
+PATCH {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2/rating
+
+{}

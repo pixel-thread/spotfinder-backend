@@ -1,5 +1,5 @@
 {
-  "name": "TEST",
+  "name": "$randomName",
   "address": "42 Elm Street, Midtown",
   "price": 6.5,
   "rating": [],
@@ -9,7 +9,7 @@
   "description": "Secure parking with EV charging and easy access to public transport and dining options.",
   "image": "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?ixlib=rb-4.0.3",
   "status": "ACTIVE",
-  "features": ["EV Charging", "Security", "CCTV", "Wheelchair Access"],
+  "features": ["$randomInt", "Security", "CCTV", "Wheelchair Access"],
   "gallery": [
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?ixlib=rb-4.0.3",
     "https://images.unsplash.com/photo-1590674899484-13d6c7094a9f?ixlib=rb-4.0.3"
