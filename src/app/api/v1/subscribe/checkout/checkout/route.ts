@@ -29,7 +29,6 @@ export async function POST(req: Request) {
     // Mock transaction creation
     const mockTransaction = await prisma.transaction.create({
       data: {
-        planId: plan.id,
         amount: plan.price,
         status: 'SUCCESS',
         createdAt: new Date(),
