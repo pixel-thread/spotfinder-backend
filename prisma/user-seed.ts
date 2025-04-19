@@ -20,6 +20,7 @@ async function main() {
     password: string;
     phone: string;
   };
+
   const users: User[] = [
     {
       name: 'Super Admin',

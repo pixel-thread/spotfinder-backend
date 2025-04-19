@@ -40,6 +40,7 @@ model User {
   planId      String?
   plan        Plan[]
   ParkingSlot ParkingSlot[]
+  bookings    Booking[] // Add relation to bookings
   createdAt   DateTime      @default(now()) @db.Timestamp()
   updatedAt   DateTime      @updatedAt @db.Timestamp()
   deletedAt   DateTime?     @db.Timestamp()
@@ -111,21 +112,65 @@ model Plan {
 
 model ParkingSlot {
   id           String      @id @default(uuid())
-  slotNumber   String // Added slot number for identification
+  slotNumber   String
   isOccupied   Boolean     @default(false)
   type         VehicleType @default(TWO_WHEELER)
-  userId       String? // Made optional since not all slots may have users
+  userId       String?
   user         User?       @relation(fields: [userId], references: [id])
   parkingLot   ParkingLot  @relation(fields: [parkingLotId], references: [id])
-  parkingLotId String // Required field to link to parking lot
-  expiresAt    DateTime? // Made optional, only relevant for occupied slots
+  parkingLotId String
+  expiresAt    DateTime?
+  bookings     Booking[] // Add relation to bookings
   createdAt    DateTime    @default(now()) @db.Timestamp()
   updatedAt    DateTime    @updatedAt @db.Timestamp()
   deletedAt    DateTime?   @db.Timestamp()
 
-  @@unique([parkingLotId, slotNumber]) // Ensure slot numbers are unique within a parking lot
+  @@unique([parkingLotId, slotNumber])
   @@index([isOccupied])
   @@index([type])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  parkingSlot   ParkingSlot   @relation(fields: [parkingSlotId], references: [id])
+  parkingSlotId String
+  startTime     DateTime      @db.Timestamp()
+  endTime       DateTime      @db.Timestamp()
+  vehicleNumber String?
+  bookingStatus BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+  amount        Float
+  paymentMethod String?
+  transactionId String?
+  otp           String? // OTP for booking verification
+  otpExpiry     DateTime? // When the OTP expires
+  otpVerified   Boolean       @default(false) // Whether the OTP has been verified
+  createdAt     DateTime      @default(now()) @db.Timestamp()
+  updatedAt     DateTime      @updatedAt @db.Timestamp()
+  cancelledAt   DateTime?     @db.Timestamp()
+
+  @@index([userId])
+  @@index([parkingSlotId])
+  @@index([bookingStatus])
+  @@index([paymentStatus])
+  @@index([startTime, endTime])
+  @@index([otp]) // Add index for faster OTP lookups
 }
 
 model ParkingLot {
