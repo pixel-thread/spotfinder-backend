@@ -1,0 +1,9 @@
+###
+# @name  GET PLAN 
+GET {{NEXT_PUBLIC_API_URL}}/plan
+
+###
+# @name CREATE  PLAN 
+POST {{NEXT_PUBLIC_API_URL}}/admin/plans
+
+< ./data/plan/index.json

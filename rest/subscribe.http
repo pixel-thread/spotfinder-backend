@@ -1,0 +1,3 @@
+POST {{NEXT_PUBLIC_API_URL}}/subscribe
+
+< ./data/subscribe/index.json

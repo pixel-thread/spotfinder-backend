@@ -1,14 +1,13 @@
-// src/services/parkingService.ts
-
 import { prisma } from '@/lib/db';
 import { Prisma } from '@schema/index';
+
 import { getPagination, PaginationParams } from '@/utils/pagination';
 
 type GetAllParkingProps = PaginationParams & {
   where?: Prisma.ParkingLotWhereInput;
 };
 
-export const getAllParking = async ({ page, where }: GetAllParkingProps) => {
+export async function getParkingByUserId({ where, page }: GetAllParkingProps) {
   const { skip, take } = getPagination({ page });
   return await prisma.$transaction([
     prisma.parkingLot.findMany({
@@ -23,4 +22,4 @@ export const getAllParking = async ({ page, where }: GetAllParkingProps) => {
       orderBy: { createdAt: 'desc' },
     }),
   ]);
-};
+}

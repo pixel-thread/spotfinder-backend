@@ -7,5 +7,9 @@ type Props = {
 export async function getParkingLotById({ id }: Props) {
   return await prisma.parkingLot.findUnique({
     where: { id },
+    include: {
+      slots: true,
+      owner: true,
+    },
   });
 }

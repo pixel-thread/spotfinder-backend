@@ -39,10 +39,10 @@ model User {
   parkingLots ParkingLot[]
   planId      String?
   plan        Plan[]
+  ParkingSlot ParkingSlot[]
   createdAt   DateTime      @default(now()) @db.Timestamp()
   updatedAt   DateTime      @updatedAt @db.Timestamp()
   deletedAt   DateTime?     @db.Timestamp()
-  ParkingSlot ParkingSlot[]
 
   @@index([role])
   @@index([name])
@@ -95,33 +95,35 @@ enum PlanStatus {
 }
 
 model Plan {
-  id           String        @id @default(uuid())
-  price        Float
-  duration     Int           @db.Integer
-  status       Status        @default(ACTIVE)
-  createdAt    DateTime      @default(now()) @db.Timestamp()
-  updatedAt    DateTime      @updatedAt @db.Timestamp()
-  deletedAt    DateTime?     @db.Timestamp()
-  User         User?         @relation(fields: [userId], references: [id])
-  userId       String?
+  id        String    @id @default(uuid())
+  price     Float
+  discount  Int       @default(25)
+  duration  Int       @default(30) @db.Integer
+  status    Status    @default(ACTIVE)
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @updatedAt @db.Timestamp()
+  deletedAt DateTime? @db.Timestamp()
+  User      User?     @relation(fields: [userId], references: [id])
+  userId    String?
 
   @@index([price])
 }
 
 model ParkingSlot {
   id           String      @id @default(uuid())
-  slotNumber   String
+  slotNumber   String // Added slot number for identification
   isOccupied   Boolean     @default(false)
   type         VehicleType @default(TWO_WHEELER)
-  userId       String
-  user         User        @relation(fields: [userId], references: [id])
+  userId       String? // Made optional since not all slots may have users
+  user         User?       @relation(fields: [userId], references: [id])
   parkingLot   ParkingLot  @relation(fields: [parkingLotId], references: [id])
-  parkingLotId String
+  parkingLotId String // Required field to link to parking lot
+  expiresAt    DateTime? // Made optional, only relevant for occupied slots
   createdAt    DateTime    @default(now()) @db.Timestamp()
   updatedAt    DateTime    @updatedAt @db.Timestamp()
   deletedAt    DateTime?   @db.Timestamp()
 
-  @@unique([parkingLotId, slotNumber])
+  @@unique([parkingLotId, slotNumber]) // Ensure slot numbers are unique within a parking lot
   @@index([isOccupied])
   @@index([type])
 }
@@ -134,16 +136,15 @@ model ParkingLot {
   rating      String[]      @default([])
   distance    String?
   available   Int
-  totalSpots  Int
   openHours   String        @default("24/7")
   description String
   image       String?
-  status      Status        @default(ACTIVE)
+  status      Status        @default(INACTIVE)
   features    String[]      @default([])
   gallery     String[]      @default([])
-  User        User?         @relation(fields: [userId], references: [id])
+  owner       User?         @relation(fields: [userId], references: [id])
   userId      String?
-  slots       ParkingSlot[]
+  slots       ParkingSlot[] // One-to-many relationship with slots
   deletedAt   DateTime?     @db.Timestamp()
   createdAt   DateTime      @default(now()) @db.Timestamp()
   updatedAt   DateTime      @updatedAt @db.Timestamp()
@@ -152,12 +153,4 @@ model ParkingLot {
   @@index([deletedAt])
   @@index([name])
   @@index([price])
-}
-
-model Transaction {
-  id        String   @id @default(uuid())
-  amount    Float
-  status    String   @db.VarChar(50)
-  createdAt DateTime @default(now()) @db.Timestamp()
-  updatedAt DateTime @updatedAt @db.Timestamp()
 }
