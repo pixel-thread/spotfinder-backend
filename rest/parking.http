@@ -1,0 +1,17 @@
+###
+# @name Get All parking 
+GET {{NEXT_PUBLIC_API_URL}}/parking?page=1
+
+###
+# @name Search parking 
+GET {{NEXT_PUBLIC_API_URL}}/parking/search?q=ev&status=active&page=1
+
+###
+# @name Get Parking By Id - {parkingId}
+GET {{NEXT_PUBLIC_API_URL}}/parking/a4d7b7e6-6f79-4f21-8ef0-d23b93445c93
+
+###
+# @name Create Parking 
+POST {{NEXT_PUBLIC_API_URL}}/parking
+
+< /Users/harrison/Downloads/super-admin/rest/data/parking/index.json

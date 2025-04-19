@@ -1,0 +1,12 @@
+###
+# @name Update User Role
+PATCH {{NEXT_PUBLIC_API_URL}}/admin/role
+
+{
+  "userId":"72df3f34-c591-4883-919b-2b81632d4274",
+  "role":"SUPER_ADMIN"
+}
+
+###
+# @name Get All Users 
+GET {{NEXT_PUBLIC_API_URL}}/admin/users
