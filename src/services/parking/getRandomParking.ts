@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { PaginationParams } from '@/utils/pagination';
-import { ParkingLot } from '@prisma/client'; // Import ParkingLot type
+import { ParkingLot } from '@schema/index';
 
 type GetRandomParkingProps = PaginationParams & {
   limit?: number;
