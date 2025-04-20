@@ -2,12 +2,7 @@
 # @name REGISTER 
 POST {{NEXT_PUBLIC_API_URL}}/auth/register
 
-{
-  "email": "{{$randomInt}}@{{$randomInt}}.com",
-  "name": "{{$uuid}}",
-  "phone": "{{$randomInt}}001",
-  "password": "123Clashofclan@"
-}
+< ./data/user/index.json
 
 ###
 # @name LOGIN
