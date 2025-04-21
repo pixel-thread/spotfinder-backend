@@ -1,0 +1,3 @@
+###
+# @name GET USER SLOT
+GET {{NEXT_PUBLIC_API_URL}}/slot/user/[user_id]

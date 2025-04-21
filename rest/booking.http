@@ -1,0 +1,5 @@
+@PARKINGLOTID=8768a7eb-f12c-41c9-b64f-a53b9644ea84
+
+###
+# @name GET BOOKING 
+GET {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
