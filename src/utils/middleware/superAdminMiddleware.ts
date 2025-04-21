@@ -6,7 +6,6 @@ import { ErrorResponse } from '@/lib/errorResponse';
 export async function superAdminMiddleware(req: Request) {
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.split(' ')[1];
-  console.log(token);
   if (!token) {
     return ErrorResponse({
       status: 401,
