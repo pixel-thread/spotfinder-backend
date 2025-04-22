@@ -51,7 +51,6 @@ export async function tokenMiddleware(req: NextRequest | Request) {
     await extendTokenExpireDateByDays({
       id: activeToken.id,
       token: activeToken.token,
-      days: 7,
     });
   }
 }

@@ -3,3 +3,16 @@
 ###
 # @name GET BOOKING 
 GET {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
+
+###
+# @name BOOK A slot in a parking
+POST {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
+
+{
+  "startTime": "2023-06-01T10:00:00Z",
+  "endTime": "2023-06-01T12:00:00Z",
+  "userId":"e6fad949-085b-4397-b6c8-0e9d7a9993a3",
+  "vehicleType": "CAR",
+  "vehicleNumber": "KA-01-HG-1234"
+
+}

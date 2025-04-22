@@ -3,13 +3,12 @@ import { addDays } from '@/utils/token/addDays';
 
 type Props = {
   id: string;
-  days: number;
   token?: string;
 };
 
-export async function extendTokenExpireDateByDays({ id, token, days }: Props) {
+export async function extendTokenExpireDateByDays({ id, token }: Props) {
   return await prisma.token.update({
     where: { token: token, id },
-    data: { expiresAt: { set: addDays(new Date(), days) } },
+    data: { expiresAt: { set: addDays(new Date(), 1) } },
   });
 }

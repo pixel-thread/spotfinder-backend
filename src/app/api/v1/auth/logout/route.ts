@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
     }
     const getToken = await prisma.token.findFirst({
-      where: { token: bearerToken },
+      where: { token: bearerToken, revoked: false, expiresAt: { gt: new Date() } },
     });
     if (!getToken) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });

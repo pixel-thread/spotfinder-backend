@@ -22,10 +22,13 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/random
 POST {{NEXT_PUBLIC_API_URL}}/parking
 
 < ./data/parking/index.json
-##
+
+###
+# @name Update Parking Status
 POST {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2/status
 
 {}
+
 ###
 # @name Update Parking By Id 
 PUT {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2
@@ -37,3 +40,7 @@ PUT {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2
 PATCH {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2/rating
 
 {}
+
+###
+# @name Get Parking slot 
+GET {{NEXT_PUBLIC_API_URL}}/parking/8768a7eb-f12c-41c9-b64f-a53b9644ea84/slot?page=1

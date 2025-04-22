@@ -150,6 +150,8 @@ model Booking {
   userId        String
   parkingSlot   ParkingSlot   @relation(fields: [parkingSlotId], references: [id])
   parkingSlotId String
+  parkingLot    ParkingLot    @relation(fields: [parkingLotId], references: [id])
+  parkingLotId  String
   startTime     DateTime      @db.Timestamp()
   endTime       DateTime      @db.Timestamp()
   vehicleNumber String?
@@ -158,19 +160,20 @@ model Booking {
   amount        Float
   paymentMethod String?
   transactionId String?
-  otp           String? // OTP for booking verification
-  otpExpiry     DateTime? // When the OTP expires
-  otpVerified   Boolean       @default(false) // Whether the OTP has been verified
+  otp           String?
+  otpExpiry     DateTime?
+  otpVerified   Boolean       @default(false)
   createdAt     DateTime      @default(now()) @db.Timestamp()
   updatedAt     DateTime      @updatedAt @db.Timestamp()
   cancelledAt   DateTime?     @db.Timestamp()
 
   @@index([userId])
   @@index([parkingSlotId])
+  @@index([parkingLotId])
   @@index([bookingStatus])
   @@index([paymentStatus])
   @@index([startTime, endTime])
-  @@index([otp]) // Add index for faster OTP lookups
+  @@index([otp])
 }
 
 model ParkingLot {
@@ -189,7 +192,8 @@ model ParkingLot {
   gallery     String[]      @default([])
   owner       User?         @relation(fields: [userId], references: [id])
   userId      String?
-  slots       ParkingSlot[] // One-to-many relationship with slots
+  slots       ParkingSlot[]
+  bookings    Booking[]
   deletedAt   DateTime?     @db.Timestamp()
   createdAt   DateTime      @default(now()) @db.Timestamp()
   updatedAt   DateTime      @updatedAt @db.Timestamp()

@@ -34,8 +34,10 @@ export async function GET(req: NextRequest) {
     if (!token) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
     }
-    await tokenMiddleware(req);
-
+    const tokenResponse = await tokenMiddleware(req);
+    if (tokenResponse) {
+      return tokenResponse;
+    }
     const decoded = await verifyToken(token);
     if (!decoded || !decoded.id) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
@@ -50,6 +52,7 @@ export async function GET(req: NextRequest) {
       message: 'User verified successfully',
     });
   } catch (error) {
+    console.log(error);
     return handleApiErrors(error);
   }
 }
