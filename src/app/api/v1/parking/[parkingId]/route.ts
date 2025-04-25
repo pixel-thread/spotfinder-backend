@@ -63,7 +63,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ parkingI
       });
     }
 
-    const parking = await updateParkingByParkingId({ data, id: parkingId });
+    const parking = await updateParkingByParkingId({
+      data: { ...data, price: Number(data.price) },
+      id: parkingId,
+    });
     return SuccessResponse({ data: parking, message: 'Successfully created parking' });
   } catch (error) {
     return handleApiErrors(error);

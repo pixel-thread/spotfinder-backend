@@ -12,19 +12,16 @@ export async function addParking({ data, userId }: Props) {
     data: {
       name: data.name,
       address: data.address,
-      price: data.price,
+      price: Number(data.price),
       rating: data.rating || [],
       distance: data.distance,
-      available: data.available,
       openHours: data.openHours || '24/7',
       description: data.description,
       image: data.image,
       status: 'INACTIVE',
       features: data.features || [],
       gallery: data.gallery || [],
-      owner: {
-        connect: { id: userId },
-      },
+      owner: { connect: { id: userId } },
     },
   });
   // Step 2: Reassign unassigned user's slots (if needed)

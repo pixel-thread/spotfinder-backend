@@ -14,9 +14,6 @@ export async function GET(
   { params }: { params: Promise<{ parkingId: string }> },
 ) {
   try {
-    await tokenMiddleware(req);
-    const header = req.headers.get('authorization');
-    const token = header?.split(' ')[1];
     const { parkingId } = await params;
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
@@ -24,17 +21,6 @@ export async function GET(
     const isParkingExist = await getParkingLotById({ id: parkingId });
     if (!isParkingExist) {
       return ErrorResponse({ message: 'Parking Lot not found', status: 404 });
-    }
-    if (!token) {
-      return ErrorResponse({ message: 'Unauthorized', status: 401 });
-    }
-    const decodedToken = await verifyToken(token);
-    if (!decodedToken) {
-      return ErrorResponse({ message: 'Invalid token', status: 401 });
-    }
-    const user = await getUserById({ id: decodedToken.id });
-    if (!user) {
-      return ErrorResponse({ message: 'User not found', status: 404 });
     }
     return SuccessResponse({ data: isParkingExist.rating, message: 'Successfully fetched rating' });
   } catch (error) {

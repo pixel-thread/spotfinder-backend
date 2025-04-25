@@ -8,6 +8,19 @@ import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { addDays } from '@/utils/token/addDays';
 import { verifyToken } from '@/utils/token/verifyToken';
+import bcrypt from 'bcrypt';
+
+async function generateBcryptCode() {
+  const salt = await bcrypt.genSalt(5); // bcrypt salt
+  const hash = await bcrypt.hash(Date.now().toString(), salt);
+
+  // Clean it up to get alphanumeric uppercase characters
+  const code = hash
+    .replace(/[^A-Z0-9]/gi, '')
+    .toUpperCase()
+    .substring(0, 6);
+  return code;
+}
 
 export async function POST(req: Request) {
   try {
@@ -58,22 +71,23 @@ export async function POST(req: Request) {
     }
 
     const slotsToCreate = Array.from({ length: parseInt(body.slot) });
+    // random unique 6 char number
 
-    await prisma.$transaction(
-      slotsToCreate.map(() =>
-        prisma.parkingLot.update({
+    // Create an array of Prisma operations (not promises) to be executed in a transaction
+    await slotsToCreate.map(
+      async () =>
+        await prisma.parkingLot.update({
           where: { id: parking.id },
           data: {
             slots: {
               create: {
                 userId: user.id,
-                slotNumber: Math.floor(Math.random() * 100).toString(),
+                slotNumber: await generateBcryptCode(),
                 expiresAt: addDays(new Date(), 30),
               },
             },
           },
         }),
-      ),
     );
 
     const updateParkingStatusToActive = await updateParkingStatus({

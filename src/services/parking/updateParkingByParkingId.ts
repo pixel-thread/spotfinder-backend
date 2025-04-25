@@ -5,6 +5,7 @@ type Props = {
   data: Prisma.ParkingLotCreateInput;
   id: string;
 };
+
 export async function updateParkingByParkingId({ data, id }: Props) {
   return await prisma.parkingLot.update({
     where: { id },

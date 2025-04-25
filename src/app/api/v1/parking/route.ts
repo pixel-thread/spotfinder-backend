@@ -51,13 +51,16 @@ export async function POST(req: Request) {
     await tokenMiddleware(req);
 
     const data = parkingSchema.parse(await req.json());
-
     const user = await getUserById({ id: data.userId });
+
     if (!user) {
       return ErrorResponse({ message: 'User not found', status: 404 });
     }
 
-    const parking = await addParking({ data, userId: user.id });
+    const parking = await addParking({
+      data: { ...data, price: Number(data.price) },
+      userId: user.id,
+    });
 
     return SuccessResponse({ data: parking, message: 'Successfully created parking' });
   } catch (error) {

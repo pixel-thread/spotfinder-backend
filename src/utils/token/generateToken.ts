@@ -15,5 +15,6 @@ export const generateToken = async <T>({ id }: Props<T>): Promise<T> => {
   return (await new SignJWT({ id })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
+    .setExpirationTime('7d')
     .sign(new TextEncoder().encode(secret))) as T;
 };
