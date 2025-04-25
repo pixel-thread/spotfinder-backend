@@ -2,17 +2,13 @@
   "name": "$randomName",
   "address": "42 Elm Street, Midtown",
   "price": 6.5,
-  "rating": [],
-  "distance": "0.4 mi",
-  "available": 17,
   "openHours": "5:00 AM - 11:00 PM",
   "description": "Secure parking with EV charging and easy access to public transport and dining options.",
   "image": "https://images.unsplash.com/photo-1506521781263-d8422e82f27a?ixlib=rb-4.0.3",
-  "status": "ACTIVE",
   "features": ["$randomInt", "Security", "CCTV", "Wheelchair Access"],
   "gallery": [
     "https://images.unsplash.com/photo-1573348722427-f1d6819fdf98?ixlib=rb-4.0.3",
     "https://images.unsplash.com/photo-1590674899484-13d6c7094a9f?ixlib=rb-4.0.3"
   ],
-  "userId": "069f9797-d57b-4f67-a42d-2212f267737a"
+  "userId": "12a3cc9d-d33b-481c-8b9f-4a25b540523c"
 }

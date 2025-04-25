@@ -34,9 +34,9 @@ async function main() {
       name: 'Test Partner',
       role: 'PARTNER',
       isVerified: true,
-      email: 'partner@example.com',
+      email: 'bimonlangnongsiej@gmail.com',
       password: '123Clashofclan@',
-      phone: '8787572701',
+      phone: '8837011018',
     },
     {
       name: 'Test User',
@@ -44,7 +44,7 @@ async function main() {
       isVerified: true,
       email: 'user@example.com',
       password: '123Clashofclan@',
-      phone: '8787572703',
+      phone: '9378174248',
     },
   ];
 

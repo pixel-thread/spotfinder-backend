@@ -109,7 +109,9 @@ export async function POST(
 
     // Calculate amount based on parking price and duration
     const startDate = new Date(body.startTime);
-    const endDate = new Date(body.endTime);
+    const endDate = body.endTime
+      ? new Date(body.endTime)
+      : new Date(startDate.getTime() + 24 * 60 * 60 * 1000); // Default to 24 hours if not provided
     const durationHours = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
     const amount = parkingLot.price * durationHours;
 
@@ -129,8 +131,8 @@ export async function POST(
       bookingStatus: 'PENDING',
       transactionId: null,
       parkingLot: { connect: { id: parkingId } },
-      endTime: endDate,
       startTime: startDate,
+      endTime: endDate,
       cancelledAt: null,
       updatedAt: new Date(),
       createdAt: new Date(),

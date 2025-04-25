@@ -6,7 +6,7 @@ export const bookingSchema = z.object({
   parkingSlotId: z.string().uuid().optional(),
   parkingLotId: z.string().uuid().optional(),
   startTime: z.string(),
-  endTime: z.string(),
+  endTime: z.string().optional(),
   vehicleNumber: z.string().optional(),
   bookingStatus: z.string().optional(),
   paymentStatus: z.string().optional(),

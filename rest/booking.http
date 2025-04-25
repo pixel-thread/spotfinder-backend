@@ -14,5 +14,4 @@ POST {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
   "userId":"e6fad949-085b-4397-b6c8-0e9d7a9993a3",
   "vehicleType": "CAR",
   "vehicleNumber": "KA-01-HG-1234"
-
 }

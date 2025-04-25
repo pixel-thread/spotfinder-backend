@@ -1,3 +1,5 @@
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImU2ZmFkOTQ5LTA4NWItNDM5Ny1iNmM4LTBlOWQ3YTk5OTNhMyIsImlhdCI6MTc0NTI1NTgxOH0.RLZB-mq3U2fSF0_ya763E4I7k7_-kQfHDVCYRmNnACg
+@PARKINGID=b842d114-ad51-4c2b-b99b-206399d646fa
 ###
 # @name Get All parking 
 GET {{NEXT_PUBLIC_API_URL}}/parking?page=1
@@ -8,7 +10,7 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/search?q=ev&status=active&page=1
 
 ###
 # @name Get Parking By Id - {parkingId}
-GET {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2
+GET {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGID}}
 
 ###
 # @name Get Parking By User Id - {userId}
@@ -17,6 +19,7 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/user/96a79764-c3c2-45e8-95a9-c3521fd9a6d9
 ###
 # @name Get Parking Random
 GET {{NEXT_PUBLIC_API_URL}}/parking/random
+
 ###
 # @name Create Parking 
 POST {{NEXT_PUBLIC_API_URL}}/parking
