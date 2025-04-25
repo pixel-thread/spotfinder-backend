@@ -48,7 +48,10 @@ export async function GET(req: NextRequest) {
     }
 
     return SuccessResponse({
-      data: user,
+      data: {
+        ...user,
+        lastLogin: user?.auth?.tokens?.find((t) => t.token === token)?.lastUsedAt,
+      },
       message: 'User verified successfully',
     });
   } catch (error) {
