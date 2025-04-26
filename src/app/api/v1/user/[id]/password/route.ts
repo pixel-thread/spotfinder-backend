@@ -30,7 +30,6 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     }
     const data = registerSchema.pick({ password: true }).parse(await req.json());
     const hashPass = await hashPassword(data.password);
-    console.log(hashPass === authUser.password);
     if (authUser?.password === hashPass) {
       return ErrorResponse({ message: 'Please enter a different password', status: 400 });
     }
