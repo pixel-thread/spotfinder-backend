@@ -1,1 +1,8 @@
+@USERID=12a3cc9d-d33b-481c-8b9f-4a25b540523c
 
+PUT {{NEXT_PUBLIC_API_URL}}/user/{{USERID}}/profile-pic
+Content-Type: multipart/form-data
+
+{
+  image:{{$uuid}}
+}
