@@ -29,21 +29,22 @@ enum VehicleType {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  name        String        @db.VarChar(255)
-  profilePic  String?       @db.VarChar(255)
-  vehicleType VehicleType?  @default(TWO_WHEELER)
-  isVerified  Boolean       @default(false)
-  role        Role          @default(USER)
-  auth        Auth?
-  parkingLots ParkingLot[]
-  planId      String?
-  plan        Plan[]
-  ParkingSlot ParkingSlot[]
-  bookings    Booking[] // Add relation to bookings
-  createdAt   DateTime      @default(now()) @db.Timestamp()
-  updatedAt   DateTime      @updatedAt @db.Timestamp()
-  deletedAt   DateTime?     @db.Timestamp()
+  id             String           @id @default(uuid())
+  name           String           @db.VarChar(255)
+  profilePic     String?          @db.VarChar(255)
+  vehicleType    VehicleType?     @default(TWO_WHEELER)
+  isVerified     Boolean          @default(false)
+  role           Role             @default(USER)
+  auth           Auth?
+  parkingLots    ParkingLot[]
+  planId         String?
+  plan           Plan[]
+  ParkingSlot    ParkingSlot[]
+  bookings       Booking[] // Add relation to bookings
+  createdAt      DateTime         @default(now()) @db.Timestamp()
+  updatedAt      DateTime         @updatedAt @db.Timestamp()
+  deletedAt      DateTime?        @db.Timestamp()
+  bookingHistory BookingHistory[]
 
   @@index([role])
   @@index([name])
@@ -111,19 +112,20 @@ model Plan {
 }
 
 model ParkingSlot {
-  id           String      @id @default(uuid())
-  slotNumber   String
-  isOccupied   Boolean     @default(false)
-  type         VehicleType @default(TWO_WHEELER)
-  userId       String?
-  user         User?       @relation(fields: [userId], references: [id])
-  parkingLot   ParkingLot  @relation(fields: [parkingLotId], references: [id])
-  parkingLotId String
-  expiresAt    DateTime?
-  bookings     Booking[] // Add relation to bookings
-  createdAt    DateTime    @default(now()) @db.Timestamp()
-  updatedAt    DateTime    @updatedAt @db.Timestamp()
-  deletedAt    DateTime?   @db.Timestamp()
+  id             String           @id @default(uuid())
+  slotNumber     String
+  isOccupied     Boolean          @default(false)
+  type           VehicleType      @default(TWO_WHEELER)
+  userId         String?
+  user           User?            @relation(fields: [userId], references: [id])
+  parkingLot     ParkingLot       @relation(fields: [parkingLotId], references: [id])
+  parkingLotId   String
+  expiresAt      DateTime?
+  bookings       Booking[] // Add relation to bookings
+  createdAt      DateTime         @default(now()) @db.Timestamp()
+  updatedAt      DateTime         @updatedAt @db.Timestamp()
+  deletedAt      DateTime?        @db.Timestamp()
+  bookingHistory BookingHistory[]
 
   @@unique([slotNumber, parkingLotId])
   @@index([isOccupied])
@@ -145,27 +147,28 @@ enum PaymentStatus {
 }
 
 model Booking {
-  id            String        @id @default(uuid())
-  user          User          @relation(fields: [userId], references: [id])
+  id            String           @id @default(uuid())
+  user          User             @relation(fields: [userId], references: [id])
   userId        String
-  parkingSlot   ParkingSlot   @relation(fields: [parkingSlotId], references: [id])
+  parkingSlot   ParkingSlot      @relation(fields: [parkingSlotId], references: [id])
   parkingSlotId String
-  parkingLot    ParkingLot    @relation(fields: [parkingLotId], references: [id])
+  parkingLot    ParkingLot       @relation(fields: [parkingLotId], references: [id])
   parkingLotId  String
-  startTime     DateTime      @db.Timestamp()
+  startTime     DateTime         @db.Timestamp()
   endTime       DateTime?
   vehicleNumber String?
-  bookingStatus BookingStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
+  bookingStatus BookingStatus    @default(PENDING)
+  paymentStatus PaymentStatus    @default(PENDING)
   amount        Float
   paymentMethod String?
   transactionId String?
   otp           String?
   otpExpiry     DateTime?
-  otpVerified   Boolean       @default(false)
-  createdAt     DateTime      @default(now()) @db.Timestamp()
-  updatedAt     DateTime      @updatedAt @db.Timestamp()
-  cancelledAt   DateTime?     @db.Timestamp()
+  otpVerified   Boolean          @default(false)
+  createdAt     DateTime         @default(now()) @db.Timestamp()
+  updatedAt     DateTime         @updatedAt @db.Timestamp()
+  cancelledAt   DateTime?        @db.Timestamp()
+  history       BookingHistory[] // Add relation to booking history
 
   @@index([userId])
   @@index([parkingSlotId])
@@ -176,26 +179,52 @@ model Booking {
   @@index([otp])
 }
 
+model BookingHistory {
+  id                    String         @id @default(uuid())
+  booking               Booking        @relation(fields: [bookingId], references: [id])
+  bookingId             String
+  userId                String
+  parkingLotId          String
+  parkingslot           ParkingSlot    @relation(fields: [parkingSlotId], references: [id])
+  user                  User           @relation(fields: [userId], references: [id])
+  parkingLot            ParkingLot     @relation(fields: [parkingLotId], references: [id])
+  parkingSlotId         String
+  action                String // e.g., "CREATED", "UPDATED", "CANCELLED", "COMPLETED"
+  previousStatus        BookingStatus?
+  newStatus             BookingStatus?
+  previousPaymentStatus PaymentStatus?
+  newPaymentStatus      PaymentStatus?
+  metadata              Json? // Additional data about the change
+  performedBy           String? // User ID who performed the action (could be system)
+  createdAt             DateTime       @default(now()) @db.Timestamp()
+
+  @@index([bookingId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
 model ParkingLot {
-  id          String        @id @default(uuid())
-  name        String
-  address     String
-  price       Int           @default(30)
-  rating      String[]      @default([])
-  distance    String?
-  openHours   String        @default("24/7")
-  description String
-  image       String?
-  status      Status        @default(INACTIVE)
-  features    String[]      @default([])
-  gallery     String[]      @default([])
-  owner       User?         @relation(fields: [userId], references: [id])
-  userId      String?
-  slots       ParkingSlot[]
-  bookings    Booking[]
-  deletedAt   DateTime?     @db.Timestamp()
-  createdAt   DateTime      @default(now()) @db.Timestamp()
-  updatedAt   DateTime      @updatedAt @db.Timestamp()
+  id             String           @id @default(uuid())
+  name           String
+  address        String
+  price          Int              @default(30)
+  rating         String[]         @default([])
+  distance       String?
+  openHours      String           @default("24/7")
+  description    String
+  image          String?
+  status         Status           @default(INACTIVE)
+  features       String[]         @default([])
+  gallery        String[]         @default([])
+  owner          User?            @relation(fields: [userId], references: [id])
+  userId         String?
+  slots          ParkingSlot[]
+  bookings       Booking[]
+  deletedAt      DateTime?        @db.Timestamp()
+  createdAt      DateTime         @default(now()) @db.Timestamp()
+  updatedAt      DateTime         @updatedAt @db.Timestamp()
+  bookingHistory BookingHistory[]
 
   @@index([status])
   @@index([deletedAt])
