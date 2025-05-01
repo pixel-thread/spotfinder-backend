@@ -6,10 +6,34 @@ import { getUserById } from '@/services/user/getUserById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { getMeta } from '@/utils/pagination/getMeta';
-import { parkingSchema } from '@/utils/validation/parking';
 import { Prisma } from '@schema/index';
 import { NextRequest } from 'next/server';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
 
+/**
+ * Ensures a directory exists. Creates it if it doesn't.
+ */
+async function ensureDirectoryExists(dirPath: string) {
+  try {
+    await mkdir(dirPath, { recursive: true });
+  } catch (error) {
+    console.error('Failed to ensure directory exists:', error);
+    throw new Error('Failed to prepare upload directory.');
+  }
+}
+
+/**
+ * Saves a file buffer to the given directory.
+ */
+async function saveFile(uploadDir: string, filename: string, file: File) {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const filePath = path.join(uploadDir, filename);
+
+  await writeFile(filePath, buffer);
+}
+
+// GET function remains unchanged
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
@@ -48,22 +72,71 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   try {
+    // Middleware Authentication
     await tokenMiddleware(req);
 
-    const data = parkingSchema.parse(await req.json());
-    const user = await getUserById({ id: data.userId });
-
-    if (!user) {
-      return ErrorResponse({ message: 'User not found', status: 404 });
+    const contentType = req.headers.get('content-type') || '';
+    if (!contentType.includes('multipart/form-data')) {
+      return ErrorResponse({ status: 400, message: 'Content-Type must be multipart/form-data' });
     }
 
-    const parking = await addParking({
-      data: { ...data, price: Number(data.price) },
-      userId: user.id,
-    });
+    const formData = await req.formData();
 
-    return SuccessResponse({ data: parking, message: 'Successfully created parking' });
+    // Extract file
+    const imageFile = formData.get('image') as File | null;
+    let imageUrl = '';
+
+    if (imageFile) {
+      const timestamp = Date.now();
+      const safeFilename = `parking_${timestamp}_${imageFile.name}`;
+      const uploadDir = path.join(process.cwd(), 'public', 'uploaded', 'image');
+
+      await ensureDirectoryExists(uploadDir);
+      await saveFile(uploadDir, safeFilename, imageFile);
+
+      imageUrl = `/uploaded/image/${safeFilename}`;
+    }
+
+    // Extract fields
+    const userId = formData.get('userId')?.toString();
+    const name = formData.get('name')?.toString();
+    const address = formData.get('address')?.toString();
+    const price = formData.get('price')?.toString();
+    const description = formData.get('description')?.toString();
+    const openHours = formData.get('openHours')?.toString() || '24/7';
+    const features = formData.getAll('features').map((item) => item.toString());
+    const gallery = formData.getAll('gallery').map((item) => item.toString());
+
+    // Validate required fields
+    if (!userId || !name || !address || !price || !description) {
+      return ErrorResponse({ status: 400, message: 'Missing required fields' });
+    }
+
+    const user = await getUserById({ id: userId });
+    if (!user) {
+      return ErrorResponse({ status: 404, message: 'User not found' });
+    }
+
+    const parkingData = {
+      userId,
+      name,
+      address,
+      price: Number(price),
+      description,
+      openHours,
+      features,
+      gallery,
+      image: imageUrl,
+    };
+
+    const parking = await addParking({ data: parkingData, userId: user.id });
+
+    return SuccessResponse({
+      data: parking,
+      message: 'Successfully created parking lot with image',
+    });
   } catch (error) {
+    console.error(error);
     return handleApiErrors(error);
   }
 }

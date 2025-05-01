@@ -1,7 +1,5 @@
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
-import { authSchema } from '@/utils/validation/auth';
 import { NextRequest } from 'next/server';
-import bcrypt from 'bcrypt';
 import { generateToken } from '@/utils/token/generateToken';
 import { verifyToken } from '@/utils/token/verifyToken';
 import { getUserById } from '@/services/user/getUserById';
@@ -11,6 +9,8 @@ import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { ErrorResponse } from '@/lib/errorResponse';
 import { getAuthByPhone } from '@/services/auth/getAuthByPhone';
 import { addNewToken } from '@/services/token/addNewToken';
+import { registerSchema } from '@/utils/validation/auth/register';
+import { env } from '@/env';
 
 /**
  * GET /api/v1/auth
@@ -23,6 +23,7 @@ import { addNewToken } from '@/services/token/addNewToken';
  *   - 401: Unauthorized - Invalid or missing token
  *   - 404: User not found
  */
+
 export async function GET(req: NextRequest) {
   try {
     const authorizationHeader = req.headers.get('authorization');
@@ -48,10 +49,7 @@ export async function GET(req: NextRequest) {
     }
 
     return SuccessResponse({
-      data: {
-        ...user,
-        lastLogin: user?.auth?.tokens?.find((t) => t.token === token)?.lastUsedAt,
-      },
+      data: user,
       message: 'User verified successfully',
     });
   } catch (error) {
@@ -84,21 +82,45 @@ export async function GET(req: NextRequest) {
  * - Sets AUTH_TOKEN cookie
  * - Token expires in 24 hours
  */
-export async function POST(req: NextRequest) {
+
+export async function POST(req: Request) {
   try {
-    const body = authSchema.parse(await req.json());
+    const body = registerSchema.pick({ phone: true, otp: true }).parse(await req.json());
 
     const auth = await getAuthByPhone({ phone: body.phone });
+
     if (!auth) {
-      return ErrorResponse({ message: 'User not found', status: 404 });
+      return ErrorResponse({
+        message: 'User not found',
+        status: 404,
+      });
     }
 
-    const isValid = await bcrypt.compare(body.password, auth.password);
-    if (!isValid) {
-      return ErrorResponse({ message: 'Invalid credentials', status: 401 });
+    const INTERNAL_CODE = env.INTERNAL_CODE;
+
+    if (auth.isInternal) {
+      // For internal users, check if OTP matches either internal code or user's OTP
+      if (Number(body.otp) !== Number(INTERNAL_CODE) && Number(body.otp) !== auth.otp) {
+        return ErrorResponse({
+          message: 'Invalid OTP Internal',
+          status: 401,
+          error: { code: Number(INTERNAL_CODE), error: body.otp },
+        });
+      }
+    } else {
+      // For non-internal users, check only against user's OTP
+      if (Number(body.otp) !== auth.otp) {
+        return ErrorResponse({
+          message: 'Invalid OTP',
+          status: 401,
+        });
+      }
     }
 
+    // Generate token after successful OTP validation
+    // Check for existing valid token before generating a new one
     const now = new Date();
+
     const existingToken = await prisma.token.findFirst({
       where: {
         authId: auth.id,
@@ -107,39 +129,42 @@ export async function POST(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    if (existingToken) {
-      if (existingToken.expiresAt > now) {
-        // Token is still valid
-        return SuccessResponse({
-          token: existingToken.token,
-          message: 'Welcome back',
-        });
-      } else {
-        // Token expired, revoke it
+    let tokenValue;
+
+    if (existingToken && existingToken.expiresAt > now) {
+      // Use existing valid token
+      tokenValue = existingToken.token;
+    } else {
+      // Revoke expired token if it exists
+      if (existingToken) {
         await prisma.token.update({
           where: { id: existingToken.id },
           data: { revoked: true, revokedAt: now, revokedBy: auth.userId },
         });
       }
+
+      // Generate new token
+      tokenValue = await generateToken({ id: auth.userId });
+
+      // Store the new token
+      await addNewToken({
+        token: tokenValue,
+        authId: auth.id,
+        agent: req.headers.get('user-agent') || 'N/A',
+      });
     }
 
-    // Generate and store new token
-    const tokenValue = await generateToken({ id: auth.userId });
-
-    await addNewToken({
-      token: tokenValue,
-      authId: auth.id,
-      agent: req.headers.get('user-agent') || 'N/A',
-    });
-
+    // Return success response with token
     const response = SuccessResponse({
       token: tokenValue,
-      message: 'Login successfully',
+      message: 'Login successful',
     });
 
+    // Set cookie with the token
     response.cookies.set('AUTH_TOKEN', tokenValue, {
       path: '/',
     });
+
     return response;
   } catch (error) {
     return handleApiErrors(error);

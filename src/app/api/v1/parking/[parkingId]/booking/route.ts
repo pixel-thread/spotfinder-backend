@@ -12,7 +12,6 @@ import { bookingSchema } from '@/utils/validation/booking';
 import { Prisma } from '@schema/index';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { getUserById } from '@/services/user/getUserById';
-import { addBookingHistory } from '@/services/booking/addBookingHistory';
 
 export async function GET(
   request: NextRequest,
@@ -144,19 +143,20 @@ export async function POST(
 
     const booking = await addBooking({
       data: data,
-    }).then((val) => {
-      addBookingHistory({
-        data: {
-          userId: body.userId,
-          parkingLotId: parkingId,
-          parkingSlotId: slot.id,
-          action: 'CREATED',
-          booking: { connect: { id: val.id } },
-          performedBy: user.id,
-        },
-      });
-      return val;
     });
+    //   .then((val) => {
+    //   addBookingHistory({
+    //     data: {
+    //       userId: body.userId,
+    //       parkingLotId: parkingId,
+    //       parkingSlotId: slot.id,
+    //       action: 'CREATED',
+    //       booking: { connect: { id: val.id } },
+    //       performedBy: user.id,
+    //     },
+    //   });
+    //   return val;
+    // });
 
     // Update slot to occupied
     await prisma.parkingSlot.update({

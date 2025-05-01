@@ -5,6 +5,7 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string(),
     JWT_SECRET: z.string().min(1),
+    INTERNAL_CODE: z.string().min(5, 'Invalid OTP').max(5, 'Invalid OTP'),
   },
   client: {
     NEXT_PUBLIC_API_URL: z.string().url(),
@@ -14,5 +15,6 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     JWT_SECRET: process.env.JWT_SECRET,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    INTERNAL_CODE: process.env.INTERNAL_CODE,
   },
 });

@@ -38,8 +38,7 @@ export async function POST(req: NextRequest) {
 
     return SuccessResponse({
       data: createdUser,
-      token: token,
-      message: 'User created successfully',
+      message: 'User created successfully and logged in',
     });
   } catch (error) {
     return handleApiErrors(error);

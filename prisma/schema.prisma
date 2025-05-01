@@ -52,18 +52,20 @@ model User {
 }
 
 model Auth {
-  id        String    @id @default(uuid())
-  email     String    @unique @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  phone     String    @unique @db.VarChar(20)
-  userId    String    @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokens    Token[]
-  status    Status    @default(ACTIVE)
-  createdAt DateTime  @default(now()) @db.Timestamp()
-  updatedAt DateTime  @updatedAt @db.Timestamp()
-  deletedAt DateTime? @db.Timestamp()
+  id           String    @id @default(uuid())
+  isInternal   Boolean   @default(false)
+  phone        String    @unique @db.VarChar(20)
+  userId       String    @unique
+  otp          Int       @default(0)
+  otpExpiresAt DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokens       Token[]
+  status       Status    @default(ACTIVE)
+  createdAt    DateTime  @default(now()) @db.Timestamp()
+  updatedAt    DateTime  @updatedAt @db.Timestamp()
+  deletedAt    DateTime? @db.Timestamp()
 
+  @@index([isInternal])
   @@index([status])
   @@index([deletedAt])
 }

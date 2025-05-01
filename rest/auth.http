@@ -1,3 +1,5 @@
+@token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjhmNzYzY2ZjLTExOTktNGU1ZS05ODUzLTQ5ZGEyMjc4ZjkyNCIsImlhdCI6MTc0NjA5MjUwMX0.pQQOTS5HuzS86VgYohXGvUR_UmoHEnjXe2cBdQWFdQg
+
 ###
 # @name REGISTER 
 POST {{NEXT_PUBLIC_API_URL}}/auth/register
@@ -14,10 +16,28 @@ POST {{NEXT_PUBLIC_API_URL}}/auth
 }
 
 ###
+# @name GET LOGIN CODE 
+POST {{NEXT_PUBLIC_API_URL}}/auth/init
+
+{
+  "phone": "1234567890"
+}
+
+###
+# @name Login with code 
+POST {{NEXT_PUBLIC_API_URL}}/auth
+
+{
+  "phone": "1234567890",
+  "otp": "54555"
+}
+
+###
 # @name USER 
 GET {{NEXT_PUBLIC_API_URL}}/auth
+AUTHORIZATION: Bearer {{token}}
 
 ###
 # @name LOGOUT
 POST {{NEXT_PUBLIC_API_URL}}/auth/logout
-
+AUTHORIZATION: Bearer {{token}}
