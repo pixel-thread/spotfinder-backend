@@ -29,7 +29,7 @@ POST {{NEXT_PUBLIC_API_URL}}/auth
 
 {
   "phone": "1234567890",
-  "otp": "54555"
+  "otp": "62300"
 }
 
 ###

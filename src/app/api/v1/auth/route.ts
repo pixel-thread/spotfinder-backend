@@ -11,6 +11,7 @@ import { getAuthByPhone } from '@/services/auth/getAuthByPhone';
 import { addNewToken } from '@/services/token/addNewToken';
 import { registerSchema } from '@/utils/validation/auth/register';
 import { env } from '@/env';
+import { logger } from '@/utils/logger';
 
 /**
  * GET /api/v1/auth
@@ -100,6 +101,13 @@ export async function POST(req: Request) {
 
     if (auth.isInternal) {
       // For internal users, check if OTP matches either internal code or user's OTP
+      if (auth.otpExpiresAt < new Date()) {
+        return ErrorResponse({
+          message: 'OTP expired',
+          status: 401,
+        });
+      }
+
       if (Number(body.otp) !== Number(INTERNAL_CODE) && Number(body.otp) !== auth.otp) {
         return ErrorResponse({
           message: 'Invalid OTP Internal',
@@ -126,7 +134,7 @@ export async function POST(req: Request) {
         authId: auth.id,
         revoked: false,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { expiresAt: 'asc', createdAt: 'desc' },
     });
 
     let tokenValue;
@@ -167,6 +175,7 @@ export async function POST(req: Request) {
 
     return response;
   } catch (error) {
+    logger.error(error);
     return handleApiErrors(error);
   }
 }

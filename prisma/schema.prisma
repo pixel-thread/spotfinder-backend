@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "./generated/client"
+  provider        = "prisma-client-js"
+  output          = "./generated/client"
+  previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource db {
@@ -57,7 +58,7 @@ model Auth {
   phone        String    @unique @db.VarChar(20)
   userId       String    @unique
   otp          Int       @default(0)
-  otpExpiresAt DateTime?
+  otpExpiresAt DateTime  @db.Timestamp()
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokens       Token[]
   status       Status    @default(ACTIVE)
