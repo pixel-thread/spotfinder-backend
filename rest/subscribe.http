@@ -1,3 +1,6 @@
+@token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjhmNzYzY2ZjLTExOTktNGU1ZS05ODUzLTQ5ZGEyMjc4ZjkyNCIsImlhdCI6MTc0NjA5MjUwMX0.pQQOTS5HuzS86VgYohXGvUR_UmoHEnjXe2cBdQWFdQg
+
 POST {{NEXT_PUBLIC_API_URL}}/subscribe
+Authorization: Bearer $token
 
 < ./data/subscribe/index.json
