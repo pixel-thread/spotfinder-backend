@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     const auth = await getAuthByPhone({ phone: body.phone });
 
     if (!auth) {
+      logger.error({ message: 'User Not Found', phone: body.phone });
       return ErrorResponse({
         status: 400,
         message: 'User not found',

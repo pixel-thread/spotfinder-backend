@@ -37,13 +37,17 @@ export async function GET(req: NextRequest) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
     }
     const tokenResponse = await tokenMiddleware(req);
+
     if (tokenResponse) {
       return tokenResponse;
     }
+
     const decoded = await verifyToken(token);
+
     if (!decoded || !decoded.id) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
     }
+
     const user = await getUserById({ id: decoded.id });
     if (!user) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
@@ -134,7 +138,7 @@ export async function POST(req: Request) {
         authId: auth.id,
         revoked: false,
       },
-      orderBy: { expiresAt: 'asc', createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
 
     let tokenValue;
