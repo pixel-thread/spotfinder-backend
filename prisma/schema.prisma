@@ -1,7 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  output          = "./generated/client"
-  previewFeatures = ["prismaSchemaFolder"]
+  provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 datasource db {
@@ -33,13 +32,10 @@ model User {
   id             String           @id @default(uuid())
   name           String           @db.VarChar(255)
   profilePic     String?          @db.VarChar(255)
-  vehicleType    VehicleType?     @default(TWO_WHEELER)
   isVerified     Boolean          @default(false)
   role           Role             @default(USER)
   auth           Auth?
   parkingLots    ParkingLot[]
-  planId         String?
-  plan           Plan[]
   ParkingSlot    ParkingSlot[]
   bookings       Booking[] // Add relation to bookings
   createdAt      DateTime         @default(now()) @db.Timestamp()
@@ -108,8 +104,6 @@ model Plan {
   createdAt DateTime  @default(now()) @db.Timestamp()
   updatedAt DateTime  @updatedAt @db.Timestamp()
   deletedAt DateTime? @db.Timestamp()
-  User      User?     @relation(fields: [userId], references: [id])
-  userId    String?
 
   @@index([price])
 }
