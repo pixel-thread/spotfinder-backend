@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/db';
-// import { hashPassword } from '@/utils/hash/hashPassword';
 
 type DataType = {
   name: string;
@@ -12,9 +11,10 @@ type Props = {
 
 export async function createUser({ data }: Props) {
   return await prisma.auth.create({
-    // omit: { password: true },
     data: {
       phone: data.phone,
+      otp: 0,
+      otpExpiresAt: new Date(Date.now() + 15 * 60 * 1000),
       user: {
         create: {
           name: data.name,
