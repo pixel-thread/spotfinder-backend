@@ -8,30 +8,8 @@ import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { getMeta } from '@/utils/pagination/getMeta';
 import { Prisma } from '@schema/index';
 import { NextRequest } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-
-/**
- * Ensures a directory exists. Creates it if it doesn't.
- */
-async function ensureDirectoryExists(dirPath: string) {
-  try {
-    await mkdir(dirPath, { recursive: true });
-  } catch (error) {
-    console.error('Failed to ensure directory exists:', error);
-    throw new Error('Failed to prepare upload directory.');
-  }
-}
-
-/**
- * Saves a file buffer to the given directory.
- */
-async function saveFile(uploadDir: string, filename: string, file: File) {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const filePath = path.join(uploadDir, filename);
-
-  await writeFile(filePath, buffer);
-}
+import { ID, appWriteStorage } from '@/lib/config/appwrite';
+import { env } from '@/env';
 
 // GET function remains unchanged
 export async function GET(req: NextRequest) {
@@ -73,7 +51,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: Request) {
   try {
     // Middleware Authentication
-    await tokenMiddleware(req);
+    const isTokenInvalid = await tokenMiddleware(req);
+    if (isTokenInvalid) {
+      return isTokenInvalid;
+    }
 
     const contentType = req.headers.get('content-type') || '';
     if (!contentType.includes('multipart/form-data')) {
@@ -81,31 +62,44 @@ export async function POST(req: Request) {
     }
 
     const formData = await req.formData();
-
+    const userId = formData.get('userId')?.toString();
     // Extract file
     const imageFile = formData.get('image') as File | null;
     let imageUrl = '';
+    const galaryImage = formData.getAll('gallery') as File[];
+    const galleryUrl: string[] = [];
 
     if (imageFile) {
-      const timestamp = Date.now();
-      const safeFilename = `parking_${timestamp}_${imageFile.name}`;
-      const uploadDir = path.join(process.cwd(), 'public', 'uploaded', 'image');
-
-      await ensureDirectoryExists(uploadDir);
-      await saveFile(uploadDir, safeFilename, imageFile);
-
-      imageUrl = `/uploaded/image/${safeFilename}`;
+      if (userId) {
+        const uploaded = await appWriteStorage.createFile(
+          env.APPWRITE_BUCKET_ID,
+          ID.unique(),
+          imageFile,
+          [`read("any")`],
+        );
+        imageUrl = `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`;
+      }
     }
-
+    if (galaryImage.length > 0) {
+      for (const file of galaryImage) {
+        const uploaded = await appWriteStorage.createFile(
+          env.APPWRITE_BUCKET_ID,
+          ID.unique(),
+          file,
+        );
+        galleryUrl.push(
+          `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`,
+        );
+      }
+    }
     // Extract fields
-    const userId = formData.get('userId')?.toString();
     const name = formData.get('name')?.toString();
     const address = formData.get('address')?.toString();
     const price = formData.get('price')?.toString();
     const description = formData.get('description')?.toString();
     const openHours = formData.get('openHours')?.toString() || '24/7';
     const features = formData.getAll('features').map((item) => item.toString());
-    const gallery = formData.getAll('gallery').map((item) => item.toString());
+    const gallery = galleryUrl;
 
     // Validate required fields
     if (!userId || !name || !address || !price || !description) {
