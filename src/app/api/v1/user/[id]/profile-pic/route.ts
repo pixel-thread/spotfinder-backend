@@ -5,9 +5,9 @@ import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { verifyToken } from '@/utils/token/verifyToken';
 import { NextRequest } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 import { updateUserProfilePic } from '@/services/user/updateUserProfilePic';
+import { appWriteStorage, ID } from '@/lib/config/appwrite';
+import { env } from '@/env';
 
 export async function PUT(req: NextRequest) {
   try {
@@ -31,6 +31,7 @@ export async function PUT(req: NextRequest) {
         message: 'Unauthorized',
       });
     }
+
     const userId = decoded.id;
 
     if (!userId) {
@@ -55,6 +56,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const formData = await req.formData();
+
     const file = formData.get('image') as File;
 
     if (!file) {
@@ -64,46 +66,25 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    // Create a unique filename
-    const timestamp = new Date().getTime();
-    const filename = `${userId}_${timestamp}_${file.name.replace(/\s+/g, '_')}`;
+    let imageUrl = '';
 
-    // Define the upload directory and ensure it exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'profile-pics');
+    if (userId) {
+      const uploaded = await appWriteStorage.createFile(env.APPWRITE_BUCKET_ID, ID.unique(), file, [
+        `read("any")`,
+      ]);
 
-    try {
-      // Convert the file to a buffer
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Write the file to the filesystem
-      const filePath = path.join(uploadDir, filename);
-      await writeFile(filePath, buffer);
-
-      // Save the file path to the user's profile in the database
-      const imageUrl = `/uploads/profile-pics/${filename}`;
-
-      // Update user profile with the new image URL
-      const updatedUser = await updateUserProfilePic({
-        userId: userId,
-        profilePicUrl: imageUrl,
-      });
-
-      return SuccessResponse({
-        status: 200,
-        message: 'Profile picture updated successfully',
-        data: {
-          user: updatedUser,
-          imageUrl: imageUrl,
-        },
-      });
-    } catch (error) {
-      console.error('Error saving file:', error);
-      return ErrorResponse({
-        status: 500,
-        message: 'Failed to save image',
-      });
+      imageUrl = `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`;
     }
+
+    const updatedProfile = updateUserProfilePic({
+      userId,
+      url: imageUrl,
+    });
+
+    return SuccessResponse({
+      message: 'Profile picture updated successfully',
+      data: updatedProfile,
+    });
   } catch (error) {
     return handleApiErrors(error);
   }

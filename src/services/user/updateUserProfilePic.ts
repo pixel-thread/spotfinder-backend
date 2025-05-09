@@ -2,13 +2,13 @@ import { prisma } from '@/lib/db';
 
 interface UpdateUserProfilePicParams {
   userId: string;
-  profilePicUrl: string;
+  url: string;
 }
 
-export async function updateUserProfilePic({ userId, profilePicUrl }: UpdateUserProfilePicParams) {
+export async function updateUserProfilePic({ userId, url }: UpdateUserProfilePicParams) {
   return prisma.user.update({
     where: { id: userId },
-    data: { profilePic: profilePicUrl },
+    data: { profilePic: url },
     select: {
       id: true,
       name: true,
