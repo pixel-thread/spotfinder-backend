@@ -9,10 +9,5 @@ export async function updateUserProfilePic({ userId, url }: UpdateUserProfilePic
   return prisma.user.update({
     where: { id: userId },
     data: { profilePic: url },
-    select: {
-      id: true,
-      name: true,
-      profilePic: true,
-    },
   });
 }
