@@ -11,7 +11,10 @@ export const parkingSchema = z.object({
   image: z.string().url().optional(),
   rating: z.array(z.string().uuid()).optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE').optional(),
-  features: z.array(z.string()).optional(),
+  features: z
+    .string()
+    .transform((val) => val.split(','))
+    .optional(),
   gallery: z.array(z.string()).optional(),
   userId: z.string().uuid(),
 });

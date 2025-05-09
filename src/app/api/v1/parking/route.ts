@@ -8,8 +8,7 @@ import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { getMeta } from '@/utils/pagination/getMeta';
 import { Prisma } from '@schema/index';
 import { NextRequest } from 'next/server';
-import { ID, appWriteStorage } from '@/lib/config/appwrite';
-import { env } from '@/env';
+import { parkingSchema } from '@/utils/validation/parking';
 
 // GET function remains unchanged
 export async function GET(req: NextRequest) {
@@ -50,88 +49,39 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   try {
+    const body = parkingSchema.parse(await req.json());
+
     const isTokenInvalid = await tokenMiddleware(req);
 
     if (isTokenInvalid) {
       return isTokenInvalid;
     }
 
-    const contentType = req.headers.get('content-type') || '';
-    if (!contentType.includes('multipart/form-data')) {
-      return ErrorResponse({ status: 400, message: 'Content-Type must be multipart/form-data' });
-    }
+    const user = await getUserById({ id: body.userId });
 
-    const formData = await req.formData();
-    const userId = formData.get('userId')?.toString();
-    // Extract file
-    const imageFile = formData.get('image') as File | null;
-    let imageUrl = '';
-    const galaryImage = formData.getAll('gallery') as File[];
-    const galleryUrl: string[] = [];
-
-    if (imageFile) {
-      if (userId) {
-        const uploaded = await appWriteStorage.createFile(
-          env.APPWRITE_BUCKET_ID,
-          ID.unique(),
-          imageFile,
-          [`read("any")`],
-        );
-        imageUrl = `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`;
-      }
-    }
-
-    if (galaryImage.length > 0) {
-      for (const file of galaryImage) {
-        const uploaded = await appWriteStorage.createFile(
-          env.APPWRITE_BUCKET_ID,
-          ID.unique(),
-          file,
-        );
-        galleryUrl.push(
-          `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`,
-        );
-      }
-    }
-    // Extract fields
-    const name = formData.get('name')?.toString();
-    const address = formData.get('address')?.toString();
-    const price = formData.get('price')?.toString();
-    const description = formData.get('description')?.toString();
-    const openHours = formData.get('openHours')?.toString() || '24/7';
-    const ft = formData.getAll('features').map((item) => item.toString());
-    const features = ft.join(',');
-    const gallery = galleryUrl;
-
-    // Validate required fields
-    if (!userId || !name || !address || !price || !description) {
-      return ErrorResponse({ status: 400, message: 'Missing required fields' });
-    }
-
-    const user = await getUserById({ id: userId });
     if (!user) {
       return ErrorResponse({ status: 404, message: 'User not found' });
     }
 
     const parkingData: Prisma.ParkingLotCreateInput = {
-      name,
-      address,
-      price: Number(price),
-      description,
-      openHours,
-      features: features.split(','),
-      gallery,
-      image: imageUrl,
+      address: body.address,
+      description: body.description,
+      distance: body.distance,
+      features: body.features,
+      gallery: body.gallery,
+      image: body.image,
+      name: body.name,
+      price: Number(body.price),
+      openHours: body.openHours,
     };
 
     const parking = await addParking({ data: parkingData, userId: user.id });
 
     return SuccessResponse({
       data: parking,
-      message: 'Successfully created parking lot with image',
+      message: 'Successfully created parking',
     });
   } catch (error) {
-    console.error(error);
     return handleApiErrors(error);
   }
 }
