@@ -50,8 +50,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   try {
-    // Middleware Authentication
     const isTokenInvalid = await tokenMiddleware(req);
+
     if (isTokenInvalid) {
       return isTokenInvalid;
     }
@@ -80,6 +80,7 @@ export async function POST(req: Request) {
         imageUrl = `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`;
       }
     }
+
     if (galaryImage.length > 0) {
       for (const file of galaryImage) {
         const uploaded = await appWriteStorage.createFile(
@@ -98,7 +99,8 @@ export async function POST(req: Request) {
     const price = formData.get('price')?.toString();
     const description = formData.get('description')?.toString();
     const openHours = formData.get('openHours')?.toString() || '24/7';
-    const features = formData.getAll('features').map((item) => item.toString());
+    const ft = formData.getAll('features').map((item) => item.toString());
+    const features = ft.join(',');
     const gallery = galleryUrl;
 
     // Validate required fields
@@ -111,14 +113,13 @@ export async function POST(req: Request) {
       return ErrorResponse({ status: 404, message: 'User not found' });
     }
 
-    const parkingData = {
-      userId,
+    const parkingData: Prisma.ParkingLotCreateInput = {
       name,
       address,
       price: Number(price),
       description,
       openHours,
-      features,
+      features: features.split(','),
       gallery,
       image: imageUrl,
     };
