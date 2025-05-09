@@ -5,7 +5,6 @@ import { ErrorResponse } from '@/lib/errorResponse';
 import { SuccessResponse } from '@/lib/successResponse';
 import { getParkingLotById } from '@/services/parking/getParkingLotById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
-import { logger } from '@/utils/logger';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { ID } from 'node-appwrite';
 import { z } from 'zod';
@@ -70,17 +69,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ parking
         ID.unique(),
         galaryImage,
       );
-      logger.log({
-        message: 'File uploaded successfully',
-        uploaded,
-      });
       galleryUrl.push(
         `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`,
       );
     }
 
     const gallery = galleryUrl;
-    logger.log(gallery);
     const parking = await prisma.parkingLot.update({
       where: { id: parkingId },
       data: { gallery: [...isParkingExists.gallery, ...gallery] },
