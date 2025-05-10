@@ -134,13 +134,13 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ parki
       })
       .parse(await req.json());
 
-    const isImageExist = isParkingExists.gallery.find((item) => item === body.url);
+    const isImageExist = isParkingExists.gallery.find((item: string) => item === body.url);
 
     if (!isImageExist || isImageExist.length === 0) {
       return ErrorResponse({ status: 404, message: 'Gallery image not found' });
     }
 
-    const gallery = isParkingExists.gallery.filter((item) => item !== body.url);
+    const gallery = isParkingExists.gallery.filter((item: string) => item !== body.url);
 
     if (!gallery || gallery.length === 0) {
       return ErrorResponse({ status: 404, message: 'Gallery image not found' });
