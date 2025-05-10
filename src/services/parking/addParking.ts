@@ -12,6 +12,7 @@ export async function addParking({ data, userId }: Props) {
     data: {
       name: data.name,
       address: data.address,
+      city: data.city,
       price: Number(data.price) || 30,
       rating: data.rating || [],
       distance: data.distance,

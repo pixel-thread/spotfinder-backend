@@ -66,6 +66,7 @@ export async function POST(req: Request) {
     const parkingData: Prisma.ParkingLotCreateInput = {
       address: body.address,
       description: body.description,
+      city: body.city,
       distance: body.distance,
       features: body.features,
       gallery: body.gallery,
