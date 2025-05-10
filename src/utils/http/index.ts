@@ -69,7 +69,7 @@ const http = {
     config?: AxiosRequestConfig,
   ): Promise<ApiResponse<T>> => {
     try {
-      logger.log({ method: 'POST =>', path: url });
+      logger.log({ method: 'POST =>', path: url, data });
       const response = await axiosInstance.post(url, data, config);
       return handleResponse<T>(response);
     } catch (error) {

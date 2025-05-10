@@ -13,13 +13,19 @@ type RoleRoute = {
 
 const routeRoles: RoleRoute[] = [
   {
-    url: '/admin/*',
-    role: ['SUPER_ADMIN'],
+    url: '/dashboard/*',
+    role: ['SUPER_ADMIN', 'USER', 'PARTNER'],
     needAuth: true,
+  },
+  {
+    url: '/parking/*',
+    role: ['SUPER_ADMIN', 'PARTNER'],
+    needAuth: false,
   },
   {
     url: '/contact/*',
     role: ['SUPER_ADMIN', 'USER', 'PARTNER'],
+    needAuth: false,
   },
 ];
 
@@ -80,7 +86,7 @@ export const RoleBaseRoute = ({ children }: PropsT) => {
         // If the user does not have the required role(s)
         if (!hasRequiredRole) {
           // Redirect the user to a fallback page specified in the route's configuration or to the homepage
-          router.replace(currentRoute.redirect || '/');
+          router.replace(currentRoute.redirect || '/forbidden');
           return; // Exit the logic as redirection is in progress
         }
       }
@@ -91,7 +97,7 @@ export const RoleBaseRoute = ({ children }: PropsT) => {
   useEffect(() => {
     if (isAuthLoading || isLoading) return;
     if (isAuthenticated && pageAccessOnlyIfUnAuthenticated.includes(pathName)) {
-      router.push(redirectTo || '/');
+      router.push(redirectTo || '/dashboard');
     }
   }, [isAuthenticated, pathName, redirectTo, router, isAuthLoading, isLoading]);
 

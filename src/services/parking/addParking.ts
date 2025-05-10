@@ -12,7 +12,7 @@ export async function addParking({ data, userId }: Props) {
     data: {
       name: data.name,
       address: data.address,
-      price: Number(data.price),
+      price: Number(data.price) || 30,
       rating: data.rating || [],
       distance: data.distance,
       openHours: data.openHours || '24/7',

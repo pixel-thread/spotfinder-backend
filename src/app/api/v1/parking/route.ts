@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
     const where: Prisma.ParkingLotWhereInput = {
       deletedAt: null,
-      status: 'ACTIVE',
+      // status: 'ACTIVE',
       AND: [
         {
           OR: [
@@ -71,8 +71,8 @@ export async function POST(req: Request) {
       gallery: body.gallery,
       image: body.image,
       name: body.name,
-      price: Number(body.price),
-      openHours: body.openHours,
+      price: Number(body.price || 30),
+      openHours: body.openHours || '09-18',
     };
 
     const parking = await addParking({ data: parkingData, userId: user.id });

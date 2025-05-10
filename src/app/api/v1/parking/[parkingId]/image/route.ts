@@ -6,7 +6,7 @@ import { SuccessResponse } from '@/lib/successResponse';
 import { getParkingLotById } from '@/services/parking/getParkingLotById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
-import { ID } from 'node-appwrite';
+import { ID, Permission, Role } from 'node-appwrite';
 
 export async function GET(req: Request, { params }: { params: Promise<{ parkingId: string }> }) {
   try {
@@ -68,6 +68,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ parkingI
         env.APPWRITE_BUCKET_ID,
         ID.unique(),
         galaryImage,
+        [
+          Permission.read(Role.any()), // Anyone can view this document
+        ],
       );
       url = `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`;
     }

@@ -5,8 +5,9 @@ import { ErrorResponse } from '@/lib/errorResponse';
 import { SuccessResponse } from '@/lib/successResponse';
 import { getParkingLotById } from '@/services/parking/getParkingLotById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
+import { logger } from '@/utils/logger';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
-import { ID } from 'node-appwrite';
+import { ID, Permission, Role } from 'node-appwrite';
 import { z } from 'zod';
 
 export async function GET(req: Request, { params }: { params: Promise<{ parkingId: string }> }) {
@@ -36,50 +37,74 @@ export async function GET(req: Request, { params }: { params: Promise<{ parkingI
 export async function POST(req: Request, { params }: { params: Promise<{ parkingId: string }> }) {
   try {
     const { parkingId } = await params;
+
+    // Check if the parking ID is provided
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
     }
-    const isTokenInvalid = await tokenMiddleware(req);
 
+    // Validate token
+    const isTokenInvalid = await tokenMiddleware(req);
     if (isTokenInvalid) {
       return isTokenInvalid;
     }
 
+    // Check if the content type is multipart/form-data
     const contentType = req.headers.get('content-type') || '';
+    logger.log({
+      name: 'Content-Type',
+      contentType,
+    });
 
     if (!contentType.includes('multipart/form-data')) {
       return ErrorResponse({ status: 400, message: 'Content-Type must be multipart/form-data' });
     }
+
+    // Fetch the parking lot by ID
     const isParkingExists = await getParkingLotById({ id: parkingId });
     if (!isParkingExists) {
       return ErrorResponse({ status: 404, message: 'Parking not found' });
     }
+
+    // Parse the form data
     const formData = await req.formData();
 
-    const galaryImage = formData.get('gallery') as File;
+    // Retrieve the gallery image from the form data
+    const galleryImage = formData.get('gallery');
 
-    if (!galaryImage) {
+    if (!galleryImage) {
       return ErrorResponse({ status: 400, message: 'Gallery image is required' });
     }
-    const galleryUrl: string[] = [];
 
-    if (galaryImage) {
-      const uploaded = await appWriteStorage.createFile(
-        env.APPWRITE_BUCKET_ID,
-        ID.unique(),
-        galaryImage,
-      );
-      galleryUrl.push(
-        `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`,
-      );
+    // Validate that the uploaded file is an image
+    if (!(galleryImage instanceof File)) {
+      return ErrorResponse({ status: 400, message: 'Uploaded file is not valid' });
     }
 
-    const gallery = galleryUrl;
-    const parking = await prisma.parkingLot.update({
+    const galleryUrl: string[] = [];
+
+    // Upload the image to Appwrite storage
+    const uploaded = await appWriteStorage.createFile(
+      env.APPWRITE_BUCKET_ID,
+      ID.unique(),
+      galleryImage,
+      [Permission.read(Role.any())],
+    );
+
+    galleryUrl.push(
+      `${env.APPWRITE_ENDPOINT}/storage/buckets/${env.APPWRITE_BUCKET_ID}/files/${uploaded.$id}/view?project=${env.APPWRITE_PROJECT_ID}`,
+    );
+
+    // Update the parking lot's gallery with the new image URL
+    const updatedParking = await prisma.parkingLot.update({
       where: { id: parkingId },
-      data: { gallery: [...isParkingExists.gallery, ...gallery] },
+      data: { gallery: [...isParkingExists.gallery, ...galleryUrl] },
     });
-    return SuccessResponse({ data: parking, message: 'Parking updated successfully' });
+
+    return SuccessResponse({
+      data: updatedParking,
+      message: 'Gallery updated successfully',
+    });
   } catch (error) {
     return handleApiErrors(error);
   }

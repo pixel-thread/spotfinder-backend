@@ -2,8 +2,25 @@ import { ErrorResponse } from '@/lib/errorResponse';
 import { JWTExpired, JWTInvalid } from 'jose/errors';
 import { ZodError } from 'zod';
 import { logger } from '../logger';
+import {
+  PrismaClientInitializationError,
+  PrismaClientValidationError,
+  PrismaClientKnownRequestError,
+} from '@schema/runtime/library';
 
 export const handleApiErrors = (error: unknown) => {
+  if (error instanceof PrismaClientInitializationError) {
+    return ErrorResponse({ message: error.message, error, status: 400 });
+  }
+
+  if (error instanceof PrismaClientValidationError) {
+    return ErrorResponse({ message: error.message, error, status: 400 });
+  }
+
+  if (error instanceof PrismaClientKnownRequestError) {
+    return ErrorResponse({ message: error.message, error, status: 400 });
+  }
+
   if (error instanceof ZodError) {
     logger.error({
       type: 'ZodError',

@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isInit, setIsInit] = React.useState(true);
 
   const { isPending: isLoadingMe, mutate } = useMutation({
-    mutationFn: () => http.post<UserT>(AUTH_ENDPOINT.GET_ME),
+    mutationFn: () => http.get<UserT>(AUTH_ENDPOINT.GET_ME),
     onSuccess: (data) => {
       if (data.success) {
         setUser(data.data);
@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(null);
       return data;
     },
+    onSettled: () => setIsInit(false),
   });
 
   useEffect(() => {
@@ -41,8 +42,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextT = {
     user: user,
     isAuthLoading: isLoadingMe,
+    isSuperAdmin: user?.role === 'SUPER_ADMIN' || false,
     refresh: () => mutate(),
-  };
+  } satisfies AuthContextT;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
