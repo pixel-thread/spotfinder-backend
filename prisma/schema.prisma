@@ -206,6 +206,7 @@ model ParkingLot {
   id             String           @id @default(uuid())
   name           String
   address        String
+  city           String
   price          Int              @default(30)
   rating         String[]         @default([])
   distance       String?
