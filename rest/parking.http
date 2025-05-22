@@ -47,3 +47,7 @@ PATCH {{NEXT_PUBLIC_API_URL}}/parking/0348e35b-bc84-4e42-9d68-a6e87f9587e2/ratin
 ###
 # @name Get Parking slot 
 GET {{NEXT_PUBLIC_API_URL}}/parking/8768a7eb-f12c-41c9-b64f-a53b9644ea84/slot?page=1
+
+###
+# @name Delete Parking  
+DELETE {{NEXT_PUBLIC_API_URL}}/parking/8768a7eb-f12c-41c9-b64f-a53b9644ea84/slot?page=1

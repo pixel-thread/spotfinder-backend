@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 
     const where: Prisma.ParkingLotWhereInput = {
       deletedAt: null,
-      // status: 'ACTIVE',
+      status: 'ACTIVE',
       AND: [
         {
           OR: [

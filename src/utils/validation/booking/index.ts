@@ -8,6 +8,7 @@ export const bookingSchema = z.object({
   startTime: z.string(),
   endTime: z.string().optional(),
   vehicleNumber: z.string().optional(),
+  date: z.string(),
   bookingStatus: z.string().optional(),
   paymentStatus: z.string().optional(),
   amount: z.string().optional(),

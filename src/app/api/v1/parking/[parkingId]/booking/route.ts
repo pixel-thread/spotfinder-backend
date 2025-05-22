@@ -71,6 +71,7 @@ export async function POST(
         startTime: true,
         endTime: true,
         vehicleNumber: true,
+        date: true,
       })
       .parse(await request.json());
 
@@ -119,6 +120,7 @@ export async function POST(
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     // TODO: Add 1 hour for otp to expire else otp will be expired
     const otpExpiry = new Date();
+
     otpExpiry.setHours(otpExpiry.getHours() + 24); // OTP valid for 24 hours
     // Create booking
     const data: Prisma.BookingCreateInput = {
@@ -133,6 +135,7 @@ export async function POST(
       parkingLot: { connect: { id: parkingId } },
       startTime: startDate,
       endTime: endDate,
+      date: body.date,
       cancelledAt: null,
       updatedAt: new Date(),
       createdAt: new Date(),

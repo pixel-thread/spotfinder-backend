@@ -7,7 +7,6 @@ type Props = {
 };
 
 export async function addParking({ data, userId }: Props) {
-  // Step 1: Create the new parking lot
   const parking = await prisma.parkingLot.create({
     data: {
       name: data.name,
@@ -25,13 +24,5 @@ export async function addParking({ data, userId }: Props) {
       owner: { connect: { id: userId } },
     },
   });
-  // Step 2: Reassign unassigned user's slots (if needed)
-  await prisma.parkingSlot.updateMany({
-    where: {
-      parkingLotId: { not: parking.id }, // optional: only if not already linked
-    },
-    data: { parkingLotId: parking.id },
-  });
-
   return parking;
 }

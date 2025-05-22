@@ -9,7 +9,12 @@ import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { addDays } from '@/utils/token/addDays';
 import { verifyToken } from '@/utils/token/verifyToken';
 import bcrypt from 'bcrypt';
-
+import { z } from 'zod';
+const subScribeschema = z.object({
+  slot: z.string(),
+  parkingLotId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
 async function generateBcryptCode() {
   const salt = await bcrypt.genSalt(5); // bcrypt salt
   const hash = await bcrypt.hash(Date.now().toString(), salt);
@@ -51,7 +56,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const body = await req.json();
+    const body = subScribeschema.parse(await req.json());
 
     if (!body.slot || !body.parkingLotId) {
       return ErrorResponse({
@@ -71,8 +76,6 @@ export async function POST(req: Request) {
     }
 
     const slotsToCreate = Array.from({ length: parseInt(body.slot) });
-    // random unique 6 char number
-
     // Create an array of Prisma operations (not promises) to be executed in a transaction
     await slotsToCreate.map(
       async () =>

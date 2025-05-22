@@ -7,7 +7,7 @@ export const parkingSchema = z.object({
   city: z.string(),
   price: z.string().default('30'),
   description: z.string(),
-  distance: z.string().optional(),
+  distance: z.string().optional().nullable(),
   openHours: z.string().optional(),
   image: z.string().url().optional(),
   rating: z.array(z.string().uuid()).optional(),

@@ -152,6 +152,7 @@ model Booking {
   parkingSlotId String
   parkingLot    ParkingLot       @relation(fields: [parkingLotId], references: [id])
   parkingLotId  String
+  date          DateTime         @default(now())
   startTime     DateTime         @db.Timestamp()
   endTime       DateTime?
   vehicleNumber String?

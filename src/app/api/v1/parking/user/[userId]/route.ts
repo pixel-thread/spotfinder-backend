@@ -32,6 +32,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     }
     const where: Prisma.ParkingLotWhereInput = {
       userId: userId,
+      status: { not: 'DELETED' },
     };
     const [parking, totalParking] = await getAllParking({
       page: page,

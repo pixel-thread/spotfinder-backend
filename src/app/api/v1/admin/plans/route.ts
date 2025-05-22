@@ -9,6 +9,7 @@ import { planSchema } from '@/utils/validation/plan';
 export async function POST(req: Request) {
   try {
     const isAdmin = await superAdminMiddleware(req);
+
     if (isAdmin) {
       return isAdmin;
     }
