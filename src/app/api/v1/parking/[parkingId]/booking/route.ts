@@ -61,10 +61,7 @@ export async function POST(
         status: 400,
       });
     }
-    const isTokenNotValid = await tokenMiddleware(request);
-    if (isTokenNotValid) {
-      return isTokenNotValid;
-    }
+    await tokenMiddleware(request);
     const body = bookingSchema
       .pick({
         userId: true,

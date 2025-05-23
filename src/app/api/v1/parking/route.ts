@@ -51,11 +51,7 @@ export async function POST(req: Request) {
   try {
     const body = parkingSchema.parse(await req.json());
 
-    const isTokenInvalid = await tokenMiddleware(req);
-
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
+    await tokenMiddleware(req);
 
     const user = await getUserById({ id: body.userId });
 

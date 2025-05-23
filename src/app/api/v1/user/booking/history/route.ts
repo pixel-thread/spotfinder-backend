@@ -11,11 +11,8 @@ import { NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
-    const isTokenNotValid = await tokenMiddleware(req);
+    await tokenMiddleware(req);
 
-    if (isTokenNotValid) {
-      return isTokenNotValid;
-    }
     const token = req.headers.get('authorization')?.split(' ')[1];
 
     if (!token) {

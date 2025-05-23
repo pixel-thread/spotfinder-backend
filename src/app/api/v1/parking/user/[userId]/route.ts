@@ -13,10 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
     const searchParams = req.nextUrl.searchParams;
     const page = searchParams.get('page') || '1';
     const { userId } = await params;
-    const isNotValidToken = await tokenMiddleware(req);
-    if (isNotValidToken) {
-      return isNotValidToken;
-    }
+    await tokenMiddleware(req);
     if (!userId) {
       return ErrorResponse({
         message: 'User id is required',

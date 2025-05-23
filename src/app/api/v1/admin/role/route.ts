@@ -23,13 +23,7 @@ const ModelSchema = z.object({
 
 export async function PATCH(req: Request) {
   try {
-    const isAdminFalse = await superAdminMiddleware(req);
-    if (isAdminFalse) {
-      return ErrorResponse({
-        message: 'UnAuthorize',
-        status: 401,
-      });
-    }
+    await superAdminMiddleware(req);
     const body = ModelSchema.parse(await req.json());
 
     const user = await getUserById({ id: body.userId });

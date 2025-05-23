@@ -29,10 +29,7 @@ async function generateBcryptCode() {
 
 export async function POST(req: Request) {
   try {
-    const isNotValidToken = await tokenMiddleware(req);
-    if (isNotValidToken) {
-      return isNotValidToken;
-    }
+    await tokenMiddleware(req);
     const header = req.headers.get('authorization');
     const token = header?.split(' ')[1];
     if (!token) {

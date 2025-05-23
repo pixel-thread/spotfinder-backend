@@ -11,11 +11,7 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const currentPage = searchParams.get('page') || '1';
 
-    const isAdminFalse = await superAdminMiddleware(req);
-
-    if (isAdminFalse) {
-      return isAdminFalse;
-    }
+    await superAdminMiddleware(req);
 
     const [users, total] = await getAllUsers({ page: currentPage });
     if (!users) {

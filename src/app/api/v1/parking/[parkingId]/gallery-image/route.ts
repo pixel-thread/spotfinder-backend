@@ -16,12 +16,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ parkingI
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
     }
-    const isTokenInvalid = await tokenMiddleware(req);
+    await tokenMiddleware(req);
 
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
     const isParkingExists = await getParkingLotById({ id: parkingId });
+
     if (!isParkingExists) {
       return ErrorResponse({ status: 404, message: 'Parking not found' });
     }
@@ -44,10 +42,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ parking
     }
 
     // Validate token
-    const isTokenInvalid = await tokenMiddleware(req);
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
+    await tokenMiddleware(req);
 
     // Check if the content type is multipart/form-data
     const contentType = req.headers.get('content-type') || '';
@@ -116,11 +111,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ parki
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
     }
-    const isTokenInvalid = await tokenMiddleware(req);
-
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
+    await tokenMiddleware(req);
 
     const isParkingExists = await getParkingLotById({ id: parkingId });
 

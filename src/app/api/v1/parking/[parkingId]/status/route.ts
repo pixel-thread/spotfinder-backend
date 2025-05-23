@@ -18,11 +18,7 @@ export async function POST(
       });
     }
 
-    const isNotValidToken = await partnerMiddleware(request);
-
-    if (isNotValidToken) {
-      return isNotValidToken;
-    }
+    await partnerMiddleware(request);
 
     const parkingExist = await getParkingLotById({ id: parkingId });
 

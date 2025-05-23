@@ -14,12 +14,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ parkingI
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
     }
-    const isTokenInvalid = await tokenMiddleware(req);
+    await tokenMiddleware(req);
 
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
     const isParkingExists = await getParkingLotById({ id: parkingId });
+
     if (!isParkingExists) {
       return ErrorResponse({ status: 404, message: 'Parking not found' });
     }
@@ -38,11 +36,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ parkingI
     if (!parkingId) {
       return ErrorResponse({ message: 'Parking ID is required' });
     }
-    const isTokenInvalid = await tokenMiddleware(req);
 
-    if (isTokenInvalid) {
-      return isTokenInvalid;
-    }
+    await tokenMiddleware(req);
 
     const contentType = req.headers.get('content-type') || '';
 

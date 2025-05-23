@@ -8,11 +8,8 @@ import { planSchema } from '@/utils/validation/plan';
 
 export async function POST(req: Request) {
   try {
-    const isAdmin = await superAdminMiddleware(req);
+    await superAdminMiddleware(req);
 
-    if (isAdmin) {
-      return isAdmin;
-    }
     const body = planSchema.parse(await req.json());
     const plans = await getPlans();
     if (plans.length === 0) {
