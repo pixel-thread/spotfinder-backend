@@ -1,4 +1,5 @@
-@PARKINGLOTID=8768a7eb-f12c-41c9-b64f-a53b9644ea84
+@PARKINGLOTID=c3bd0cee-84f8-4145-b7e9-6b2422206f30
+@token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjIzNmVmZGNkLTVkZmQtNDk3MC1iOTExLWE0Y2MwNzQ5YTE2OSIsImlhdCI6MTc0ODAwMTA1NSwic3ViIjoidG9rZW4ifQ.SJKgrdw_mJyRXOCdk-BekxEnhNTXyb33oDQf9TVfuss
 
 ###
 # @name GET BOOKING 
@@ -7,16 +8,24 @@ GET {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
 ###
 # @name BOOK A slot in a parking
 POST {{NEXT_PUBLIC_API_URL}}/parking/{{PARKINGLOTID}}/booking
+CONTENT-TYPE: application/json
+Authorization: Bearer {{token}}
 
 {
+  "date": "2023-06-01T10:00:00Z",
   "startTime": "2023-06-01T10:00:00Z",
-  "endTime": "2023-06-01T12:00:00Z"
-  # "userId":"e6fad949-085b-4397-b6c8-0e9d7a9993a3",
-  # "vehicleType": "CAR",
-  # "vehicleNumber": "KA-01-HG-1234"
+  "endTime": "2023-06-01T12:00:00Z",
+  "userId":"236efdcd-5dfd-4970-b911-a4cc0749a169"
 }
 
 ###
+# @name GET RECENT BOOKING
+GET {{NEXT_PUBLIC_API_URL}}/user/booking/recent
+Authorization: Bearer {{token}}
+CONTENT-TYPE: application/json
 
-GET {{NEXT_PUBLIC_API_URL}}/user/recent-bookings
-
+###
+# @name GET BOOKING HISTORY
+GET {{NEXT_PUBLIC_API_URL}}/user/booking/history
+Authorization: Bearer {{token}}
+CONTENT-TYPE: application/json

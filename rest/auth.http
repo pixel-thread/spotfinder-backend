@@ -18,18 +18,20 @@ POST {{NEXT_PUBLIC_API_URL}}/auth
 ###
 # @name GET LOGIN CODE 
 POST {{NEXT_PUBLIC_API_URL}}/auth/init
+CONTENT-TYPE: application/json
 
 {
-  "phone": "8787572702"
+  "email": "jyrwaboys@gmail.com"
 }
 
 ###
 # @name Login with code 
 POST {{NEXT_PUBLIC_API_URL}}/auth
+CONTENT-TYPE: application/json
 
 {
-  "phone": "8787572702",
-  "otp": "54555"
+  "email": "jyrwaboys@gmail.com",
+  "otp": "545555"
 }
 
 ###

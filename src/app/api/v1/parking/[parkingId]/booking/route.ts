@@ -12,6 +12,7 @@ import { bookingSchema } from '@/utils/validation/booking';
 import { Prisma } from '@schema/index';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { getUserById } from '@/services/user/getUserById';
+import { addBookingHistory } from '@/services/booking/addBookingHistory';
 
 export async function GET(
   request: NextRequest,
@@ -55,13 +56,16 @@ export async function POST(
 ) {
   try {
     const { parkingId } = await params;
+
     if (!parkingId) {
       return ErrorResponse({
         message: 'Please provide a valid parkingId',
         status: 400,
       });
     }
+
     await tokenMiddleware(request);
+
     const body = bookingSchema
       .pick({
         userId: true,
@@ -73,6 +77,7 @@ export async function POST(
       .parse(await request.json());
 
     const user = await getUserById({ id: body.userId });
+
     if (!user) {
       return ErrorResponse({
         message: 'Unauthorized',
@@ -143,20 +148,22 @@ export async function POST(
 
     const booking = await addBooking({
       data: data,
+    }).then((val) => {
+      addBookingHistory({
+        data: {
+          user: { connect: { id: user.id } },
+          booking: { connect: { id: val.id } },
+          action: 'BOOKING_CREATED',
+          parkingLot: { connect: { id: parkingId } },
+          parkingslot: { connect: { id: slot.id } },
+          newPaymentStatus: 'PENDING',
+          previousPaymentStatus: null,
+          previousStatus: null,
+          newStatus: 'PENDING',
+        },
+      });
+      return val;
     });
-    //   .then((val) => {
-    //   addBookingHistory({
-    //     data: {
-    //       userId: body.userId,
-    //       parkingLotId: parkingId,
-    //       parkingSlotId: slot.id,
-    //       action: 'CREATED',
-    //       booking: { connect: { id: val.id } },
-    //       performedBy: user.id,
-    //     },
-    //   });
-    //   return val;
-    // });
 
     // Update slot to occupied
     await prisma.parkingSlot.update({

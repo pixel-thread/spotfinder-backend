@@ -5,7 +5,7 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string(),
     JWT_SECRET: z.string().min(1),
-    INTERNAL_CODE: z.string().min(5, 'Invalid OTP').max(5, 'Invalid OTP'),
+    INTERNAL_CODE: z.string().min(6, 'Invalid OTP').max(6, 'Invalid OTP'),
     APPWRITE_ENDPOINT: z.string(),
     APPWRITE_PROJECT_ID: z.string(),
     APPWRITE_BUCKET_ID: z.string(),

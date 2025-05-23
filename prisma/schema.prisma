@@ -44,6 +44,8 @@ model User {
   deletedAt      DateTime?        @db.Timestamp()
   bookingHistory BookingHistory[]
   Email          Email[]
+  Transaction    Transaction[]
+  Invoice        Invoice[]
 
   @@index([role])
   @@index([name])
@@ -142,6 +144,8 @@ model ParkingSlot {
   createdAt      DateTime         @default(now()) @db.Timestamp()
   updatedAt      DateTime         @updatedAt @db.Timestamp()
   deletedAt      DateTime?        @db.Timestamp()
+  transactionId  String?
+  transaction    Transaction?
   bookingHistory BookingHistory[]
 
   @@unique([slotNumber, parkingLotId])
@@ -187,6 +191,7 @@ model Booking {
   updatedAt     DateTime         @updatedAt @db.Timestamp()
   cancelledAt   DateTime?        @db.Timestamp()
   history       BookingHistory[] // Add relation to booking history
+  Transaction   Transaction[]
 
   @@index([userId])
   @@index([parkingSlotId])
@@ -249,4 +254,74 @@ model ParkingLot {
   @@index([deletedAt])
   @@index([name])
   @@index([price])
+}
+
+enum Currency {
+  INR
+  USD
+  EUR
+}
+
+enum PaymentMethod {
+  CARD
+  UPI
+  WALLET
+  CASH
+}
+
+model Transaction {
+  id            String        @id @default(uuid())
+  transactionId String        @unique
+  bookingId     String?
+  booking       Booking?      @relation(fields: [bookingId], references: [id])
+  slotNumber    Int?
+  planId        String?
+  amount        Float
+  currency      Currency      @default(INR)
+  provider      String? // e.g., "stripe", "razorpay", "paypal"
+  paymentId     String        @unique // transaction ID from provider
+  paymentStatus PaymentStatus @default(PAID)
+  method        PaymentMethod @default(CASH) // card, upi, wallet
+  receiptUrl    String? // link to receipt from gateway
+  failureReason String?
+  notes         Json? // optional metadata from provider
+
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @updatedAt @db.Timestamp()
+  deletedAt DateTime? @db.Timestamp()
+
+  slotId  String?      @unique
+  slot    ParkingSlot? @relation(fields: [slotId], references: [id])
+  Invoice Invoice[]
+  userId  String
+  user    User         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([bookingId])
+  @@index([paymentId])
+  @@index([paymentStatus])
+}
+
+model Invoice {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  invoiceNumber String      @unique
+  lineItems     Json // breakdown of charges: slot fee, tax, discount
+  totalAmount   Float
+  taxAmount     Float       @default(0)
+  discount      Float       @default(0)
+  status        String      @default("PAID") // could be PAID, CANCELLED, REFUNDED
+  issuedAt      DateTime    @default(now())
+  dueDate       DateTime?
+  notes         String?
+
+  createdAt DateTime @default(now()) @db.Timestamp()
+  updatedAt DateTime @updatedAt @db.Timestamp()
+
+  @@index([userId])
+  @@index([transactionId])
+  @@index([invoiceNumber])
 }

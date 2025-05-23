@@ -63,7 +63,6 @@ export async function POST(req: Request) {
       message: 'OTP Sent Successfully to your email',
     });
   } catch (error) {
-    logger.error({ message: 'Auth Init Error=>', error });
     return handleApiErrors(error);
   }
 }

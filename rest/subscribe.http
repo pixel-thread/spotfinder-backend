@@ -1,6 +1,22 @@
-@token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjhmNzYzY2ZjLTExOTktNGU1ZS05ODUzLTQ5ZGEyMjc4ZjkyNCIsImlhdCI6MTc0NjA5MjUwMX0.pQQOTS5HuzS86VgYohXGvUR_UmoHEnjXe2cBdQWFdQg
+@token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjIzNmVmZGNkLTVkZmQtNDk3MC1iOTExLWE0Y2MwNzQ5YTE2OSIsImlhdCI6MTc0ODAwMTA1NSwic3ViIjoidG9rZW4ifQ.SJKgrdw_mJyRXOCdk-BekxEnhNTXyb33oDQf9TVfuss
 
+###
+# @name SUBSCRIBE
 POST {{NEXT_PUBLIC_API_URL}}/subscribe
-Authorization: Bearer $token
+CONTENT-TYPE: application/json
+Authorization: Bearer {{token}}
 
 < ./data/subscribe/index.json
+
+###
+# @name SUBSCRIBE_INIT
+POST {{NEXT_PUBLIC_API_URL}}/subscribe/init
+CONTENT-TYPE: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parkingLotId": "c3bd0cee-84f8-4145-b7e9-6b2422206f30",
+  "slot": "1",
+  "planId": "c82ff32c-5e03-4872-b1fc-821c897372ff",
+  "type": "CASH"
+}
