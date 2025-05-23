@@ -1,7 +1,7 @@
-import { ErrorResponse } from '@/lib/errorResponse';
 import { extendTokenExpireDateByDays } from '@/services/token/extendTokenExpireDateByDays';
 import { getActiveToken } from '@/services/token/getActiveToken';
 import { NextRequest } from 'next/server';
+import { UnauthorizedError } from '../errors/unAuthError';
 
 /**
  * Middleware to validate and manage authentication tokens
@@ -27,18 +27,12 @@ export async function tokenMiddleware(req: NextRequest | Request) {
   const token = authHeader?.split(' ')[1];
 
   if (!token) {
-    return ErrorResponse({
-      status: 401,
-      message: 'Unauthorized',
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   const activeToken = await getActiveToken({ token });
   if (!activeToken) {
-    return ErrorResponse({
-      status: 401,
-      message: 'Unauthorized',
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   // Calculate time difference

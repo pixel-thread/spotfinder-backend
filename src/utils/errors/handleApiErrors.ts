@@ -7,6 +7,8 @@ import {
   PrismaClientValidationError,
   PrismaClientKnownRequestError,
 } from '@schema/runtime/library';
+import { UnauthorizedError } from './unAuthError';
+import { EmailError } from './EmailError';
 
 export const handleApiErrors = (error: unknown) => {
   if (error instanceof PrismaClientInitializationError) {
@@ -47,6 +49,19 @@ export const handleApiErrors = (error: unknown) => {
     return ErrorResponse({ message: error.message, error });
   }
 
+  if (error instanceof EmailError) {
+    return ErrorResponse({
+      message: error.message || 'Failed to send email',
+      error,
+      status: error.status,
+    });
+  }
+  if (error instanceof UnauthorizedError) {
+    return ErrorResponse({
+      message: error.message || 'Unauthorized',
+      status: error.status,
+    });
+  }
   if (error instanceof Error) {
     logger.error({ type: 'Error', message: error.message, error });
     return ErrorResponse({ message: error.message });

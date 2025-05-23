@@ -1,35 +1,26 @@
 import { verifyToken } from '../token/verifyToken';
 import { getUserById } from '@/services/user/getUserById';
 import { prisma } from '@lib/db';
-import { ErrorResponse } from '@/lib/errorResponse';
+import { UnauthorizedError } from '../errors/unAuthError';
 
 export async function partnerMiddleware(req: Request) {
   const authHeader = req.headers.get('authorization');
   const token = authHeader?.split(' ')[1];
 
   if (!token) {
-    return ErrorResponse({
-      message: 'Unauthorized',
-      status: 401,
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   const decoded = await verifyToken(token);
 
   if (!decoded?.id) {
-    return ErrorResponse({
-      message: 'Unauthorized',
-      status: 401,
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   const user = await getUserById({ id: decoded.id });
 
   if (!user) {
-    return ErrorResponse({
-      message: 'Unauthorized',
-      status: 401,
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   const tokenRecord = await prisma.token.findFirst({
@@ -42,16 +33,10 @@ export async function partnerMiddleware(req: Request) {
   });
 
   if (!tokenRecord) {
-    return ErrorResponse({
-      message: 'Unauthorized',
-      status: 401,
-    });
+    throw new UnauthorizedError('Unauthorized');
   }
 
   if (user.role !== 'SUPER_ADMIN' && user.role !== 'PARTNER') {
-    return ErrorResponse({
-      message: 'Unauthorized',
-      status: 401,
-    });
+    throw new UnauthorizedError('Permission Denied');
   }
 }

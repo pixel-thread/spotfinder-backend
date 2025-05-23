@@ -43,16 +43,35 @@ model User {
   updatedAt      DateTime         @updatedAt @db.Timestamp()
   deletedAt      DateTime?        @db.Timestamp()
   bookingHistory BookingHistory[]
+  Email          Email[]
 
   @@index([role])
   @@index([name])
   @@index([deletedAt])
 }
 
+model Email {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  email  String   @unique @db.VarChar(255) // optional: use for logging or recipient if useful
+  sentTo String   @db.VarChar(255) // the address where the email was sent
+  count  Int      @default(0) // total sends to this recipient
+  sentAt DateTime @default(now()) // timestamp of when the email was sent
+
+  createdAt DateTime  @default(now()) @db.Timestamp()
+  updatedAt DateTime  @updatedAt @db.Timestamp()
+  deletedAt DateTime? @db.Timestamp()
+
+  @@index([userId, sentTo, sentAt])
+}
+
 model Auth {
   id           String    @id @default(uuid())
   isInternal   Boolean   @default(false)
-  phone        String    @unique @db.VarChar(20)
+  email        String    @unique
+  phone        String?   @unique @db.VarChar(20)
   userId       String    @unique
   otp          Int       @default(0)
   otpExpiresAt DateTime  @db.Timestamp()

@@ -1,29 +1,31 @@
 import { prisma } from '@/lib/db';
 import { ErrorResponse } from '@/lib/errorResponse';
+import { sendEmailOTP } from '@/lib/mailer';
 import { SuccessResponse } from '@/lib/successResponse';
-import { getAuthByPhone } from '@/services/auth/getAuthByPhone';
+import { renderOtpEmail } from '@/lib/templates/otpEmailTemplate';
+import { getAuthByEmail } from '@/services/auth/getAuthByEmail';
 import { createUser } from '@/services/user/createUser';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
-import { generateFiveDigitNumber } from '@/utils/generateFiveDigitNumber';
+import { generateSixDigitNumber } from '@/utils/generateFiveDigitNumber';
 import { logger } from '@/utils/logger';
 import { registerSchema } from '@/utils/validation/auth/register';
 
 export async function POST(req: Request) {
   try {
-    const body = registerSchema.pick({ phone: true }).parse(await req.json());
+    const body = registerSchema.pick({ email: true }).parse(await req.json());
 
-    const isUserExist = await getAuthByPhone({ phone: body.phone });
+    const isUserExist = await getAuthByEmail({ email: body.email });
 
     if (!isUserExist) {
       logger.info({ message: 'Creating new user' });
-      await createUser({ data: { phone: body.phone, name: body.phone } });
+      await createUser({ data: { email: body.email, name: body.email.split('@')[0] } });
       logger.info({ message: 'User Created' });
     }
 
-    const auth = await getAuthByPhone({ phone: body.phone });
+    const auth = await getAuthByEmail({ email: body.email });
 
     if (!auth) {
-      logger.error({ message: 'User Not Found', phone: body.phone });
+      logger.error({ message: 'User Not Found' });
       return ErrorResponse({
         status: 400,
         message: 'User not found',
@@ -31,21 +33,37 @@ export async function POST(req: Request) {
     }
 
     logger.info({ message: 'Generating OTP' });
-    const otpCode = generateFiveDigitNumber();
+
+    const otpCode = generateSixDigitNumber();
+
     logger.info({ message: 'OTP Generated' });
+
     await prisma.auth.update({
       where: { id: auth.id },
       data: { otp: otpCode, otpExpiresAt: new Date(Date.now() + 15 * 60 * 1000) },
     });
 
-    logger.info({ message: 'Sending OTP TO' + auth.phone });
-    // TODO: Send SMS/Email OTP to user
-    logger.log({ code: otpCode });
+    logger.info({ message: 'Sending OTP TO' });
+
+    await sendEmailOTP({
+      to: body.email,
+      subject: 'Spot Finder OTP',
+      text: `Your OTP is ${otpCode}`,
+      html: renderOtpEmail({
+        userName: auth.user.name,
+        otpCode: String(otpCode),
+        appName: 'Spot Finder',
+      }),
+    });
+
+    logger.info({ message: 'OTP Sent Successfully' });
+
     return SuccessResponse({
       status: 201,
-      message: `Your OTP is ${otpCode}`,
+      message: 'OTP Sent Successfully to your email',
     });
   } catch (error) {
+    logger.error({ message: 'Auth Init Error=>', error });
     return handleApiErrors(error);
   }
 }

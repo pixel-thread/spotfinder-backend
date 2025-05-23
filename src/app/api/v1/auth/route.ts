@@ -7,11 +7,11 @@ import { prisma } from '@/lib/db';
 import { SuccessResponse } from '@/lib/successResponse';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
 import { ErrorResponse } from '@/lib/errorResponse';
-import { getAuthByPhone } from '@/services/auth/getAuthByPhone';
 import { addNewToken } from '@/services/token/addNewToken';
 import { registerSchema } from '@/utils/validation/auth/register';
 import { env } from '@/env';
 import { logger } from '@/utils/logger';
+import { getAuthByEmail } from '@/services/auth/getAuthByEmail';
 
 /**
  * GET /api/v1/auth
@@ -36,11 +36,8 @@ export async function GET(req: NextRequest) {
     if (!token) {
       return ErrorResponse({ message: 'Unauthorized', status: 401 });
     }
-    const tokenResponse = await tokenMiddleware(req);
 
-    if (tokenResponse) {
-      return tokenResponse;
-    }
+    await tokenMiddleware(req);
 
     const decoded = await verifyToken(token);
 
@@ -58,7 +55,6 @@ export async function GET(req: NextRequest) {
       message: 'User verified successfully',
     });
   } catch (error) {
-    console.log(error);
     return handleApiErrors(error);
   }
 }
@@ -90,9 +86,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: Request) {
   try {
-    const body = registerSchema.pick({ phone: true, otp: true }).parse(await req.json());
+    const body = registerSchema.pick({ email: true, otp: true }).parse(await req.json());
 
-    const auth = await getAuthByPhone({ phone: body.phone });
+    const auth = await getAuthByEmail({ email: body.email });
 
     if (!auth) {
       return ErrorResponse({
