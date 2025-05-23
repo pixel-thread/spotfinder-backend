@@ -4,6 +4,7 @@ import { getAllBookingHistory } from '@/services/booking/getAllBookingHistory';
 import { getUserById } from '@/services/user/getUserById';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { tokenMiddleware } from '@/utils/middleware/tokenMiddleware';
+import { getMeta } from '@/utils/pagination/getMeta';
 import { verifyToken } from '@/utils/token/verifyToken';
 import { Prisma } from '@schema/index';
 import { NextRequest } from 'next/server';
@@ -46,9 +47,13 @@ export async function GET(req: NextRequest) {
       userId: user.id,
     };
 
-    const booking = await getAllBookingHistory({ where });
+    const [booking, total] = await getAllBookingHistory({ where });
 
-    return SuccessResponse({ data: booking, message: 'Successfully fetched booking history' });
+    return SuccessResponse({
+      data: booking,
+      meta: getMeta({ total: total, currentPage: '1' }),
+      message: 'Successfully fetched booking history',
+    });
   } catch (error) {
     return handleApiErrors(error);
   }
