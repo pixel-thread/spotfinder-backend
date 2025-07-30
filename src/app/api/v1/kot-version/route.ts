@@ -3,24 +3,7 @@ import { SuccessResponse } from '@/lib/successResponse';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
 import { logger } from '@/utils/logger';
 import { z } from 'zod';
-// {
-//       version: '1.0.3',
-//       title: 'Bug Fixes and Improvements',
-//       description: [
-//         'Fixed login crash on Android and improved startup performance.',
-//         'Fixed login crash on Android and improved startup performance.',
-//       ],
-//       mandatory: false,
-//       platforms: ['android', 'ios'],
-//       release_notes_url: 'https://example.com/releases/1.0.3',
-//       min_supported_version: '1.0.0',
-//       release_date: new Date().toISOString(),
-//       author: 'Release Bot',
-//       additional_info: {
-//         estimated_downtime: 'none',
-//         rollback_available: true,
-//       },
-//     }
+
 const schema = z.object({
   version: z.string(),
   title: z.string(),
@@ -36,15 +19,17 @@ const schema = z.object({
     rollback_available: z.boolean(),
   }),
 });
+
 export async function GET(request: Request) {
   try {
-    logger.log(request.url);
+    console.log(request);
     const version = await prisma.kotAppVersion.findMany({
       orderBy: {
         created_at: 'desc',
       },
       take: 1,
     });
+    logger.info(version);
     return SuccessResponse({ message: 'latest update', data: version[0] });
   } catch (error) {
     return handleApiErrors(error);
@@ -59,9 +44,11 @@ export async function POST(request: Request) {
         version: body.version,
       },
     });
+
     if (isVersionExists) {
       return SuccessResponse({ message: 'version already exists' });
     }
+
     const version = await prisma.kotAppVersion.create({
       data: {
         version: body.version,
