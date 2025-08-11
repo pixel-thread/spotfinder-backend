@@ -4,22 +4,22 @@ POST http://localhost:3000/api/v1/kot-version
 Content-Type: application/json
 
 {
-  "version": "1.0.6",
+  "version": "1.0.2",
   "title": "Stable Release",
   "description": [
-    "New UI Update.",
-  "Added new Dark Mode.",
-  "Added new Light Mode.",
-"Search by name or song first line."
+    "Fix Search input icon",
+    "Tynrai Jingrwai page",
+    "Song Correction",
+    "UI Update"
   ],
   "mandatory": true,
-  "platforms": ["android","ios"],
+  "platforms": ["android"],
   "release_notes_url": "https://jyrwaboys-v2.vercel.app/docs/release/kot-jingrwai",
-  "min_supported_version": "1.0.0",
-"release_date": "2025-08-02T14:00:00Z",
+  "min_supported_version": "1.0.1",
+  "release_date": "2025-08-011T14:00:00Z",
   "author": "Release Bot",
   "additional_info": {
     "estimated_downtime": "0",
-    "rollback_available":false 
+    "rollback_available":true 
   }
 }

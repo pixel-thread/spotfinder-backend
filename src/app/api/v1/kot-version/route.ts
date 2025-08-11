@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         platforms: body.platforms,
         release_notes_url: body.release_notes_url,
         min_supported_version: body.min_supported_version,
-        release_date: body.release_date,
+        release_date: new Date(),
         author: body.author,
         additional_info: body.additional_info,
       },
