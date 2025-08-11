@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/db';
 import { SuccessResponse } from '@/lib/successResponse';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
-import { logger } from '@/utils/logger';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -22,14 +21,23 @@ const schema = z.object({
 
 export async function GET(request: Request) {
   try {
-    console.log(request);
+    const searchParams = new URL(request.url).searchParams;
+    const deviceId = searchParams.get('id');
     const version = await prisma.kotAppVersion.findMany({
-      orderBy: {
-        created_at: 'desc',
-      },
+      orderBy: { created_at: 'desc' },
       take: 1,
     });
-    logger.info(version);
+
+    if (deviceId) {
+      const isDeviceExist = await prisma.kotAppUser.findUnique({ where: { deviceId } });
+      if (!isDeviceExist) {
+        await prisma.kotAppUser.create({ data: { lastUsedAt: new Date(), deviceId } });
+      }
+      await prisma.kotAppUser.update({
+        where: { deviceId: deviceId },
+        data: { lastUsedAt: new Date() },
+      });
+    }
     return SuccessResponse({ message: 'latest update', data: version[0] });
   } catch (error) {
     return handleApiErrors(error);

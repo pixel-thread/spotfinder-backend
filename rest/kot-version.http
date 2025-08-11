@@ -4,20 +4,22 @@ POST http://localhost:3000/api/v1/kot-version
 Content-Type: application/json
 
 {
-  "version": "1.0.3",
-  "title": "Bug Fixes and Improvements",
+  "version": "1.0.6",
+  "title": "Stable Release",
   "description": [
-    "Fixed login crash on Android and improved startup performance.",
-    "Fixed login crash on Android and improved startup performance."
+    "New UI Update.",
+  "Added new Dark Mode.",
+  "Added new Light Mode.",
+"Search by name or song first line."
   ],
-  "mandatory": false,
-  "platforms": ["android", "ios"],
-  "release_notes_url": "https://example.com/releases/1.0.3",
+  "mandatory": true,
+  "platforms": ["android","ios"],
+  "release_notes_url": "https://jyrwaboys-v2.vercel.app/docs/release/kot-jingrwai",
   "min_supported_version": "1.0.0",
-"release_date": "2025-06-29T14:00:00Z",
+"release_date": "2025-08-02T14:00:00Z",
   "author": "Release Bot",
   "additional_info": {
-    "estimated_downtime": "none",
-    "rollback_available": true
+    "estimated_downtime": "0",
+    "rollback_available":false 
   }
 }
