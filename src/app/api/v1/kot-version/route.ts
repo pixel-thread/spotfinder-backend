@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db';
 import { SuccessResponse } from '@/lib/successResponse';
 import { handleApiErrors } from '@/utils/errors/handleApiErrors';
+import { logger } from '@/utils/logger';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -72,6 +73,24 @@ export async function POST(request: Request) {
       },
     });
     return SuccessResponse({ message: 'version created', data: version });
+  } catch (error) {
+    return handleApiErrors(error);
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    logger.info(request.url);
+    const kot = await prisma.kotAppUser.findMany({
+      omit: { updatedAt: true, id: true },
+    });
+    return SuccessResponse({
+      message: 'Kot Users',
+      data: {
+        total: kot.length,
+        data: kot,
+      },
+    });
   } catch (error) {
     return handleApiErrors(error);
   }
