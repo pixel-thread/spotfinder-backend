@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
   try {
     logger.info(request.url);
     const kot = await prisma.kotAppUser.findMany({
-      omit: { updatedAt: true, id: true },
+      select: { lastUsedAt: true },
     });
     return SuccessResponse({
       message: 'Kot Users',
