@@ -1,11 +1,17 @@
+@id = 1
 
-###
-POST http://localhost:3000/api/v1/kot-version
+
+### Add Version Update
+
+POST {{NEXT_PUBLIC_API_URL}}/api/v1/kot-version?id={{id}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "version": "1.0.2",
-  "title": "Stable Release",
+  "additional_info": {
+    "estimated_downtime": "0",
+    "rollback_available": false
+  },
+  "author": "Release Bot",
   "description": [
     "Fix Search input icon",
     "Tynrai Jingrwai page",
@@ -13,13 +19,25 @@ Content-Type: application/json
     "UI Update"
   ],
   "mandatory": true,
-  "platforms": ["android"],
-  "release_notes_url": "https://jyrwaboys-v2.vercel.app/docs/release/kot-jingrwai",
   "min_supported_version": "1.0.1",
+  "platforms": [
+    "android",
+    "ios"
+  ],
   "release_date": "2025-08-011T14:00:00Z",
-  "author": "Release Bot",
-  "additional_info": {
-    "estimated_downtime": "0",
-    "rollback_available":true 
-  }
+  "release_notes_url": "https://jyrwaboys-v2.vercel.app/docs/release/kot-jingrwai",
+  "title": "Stable Release",
+  "version": "1.0.2"
 }
+
+
+### Get Update Info
+
+GET {{NEXT_PUBLIC_API_URL}}/kot-version?id={{id}} HTTP/1.1
+Content-Type: application/json
+
+
+### Get No of user
+
+PUT {{NEXT_PUBLIC_API_URL}}/kot-version HTTP/1.1
+Content-Type: applicktion/json

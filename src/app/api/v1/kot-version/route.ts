@@ -20,6 +20,7 @@ const schema = z.object({
   }),
 });
 
+const uuid = z.string().uuid();
 export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
       take: 1,
     });
 
-    if (deviceId) {
+    if (deviceId && uuid.safeParse(deviceId).success) {
       const isDeviceExist = await prisma.kotAppUser.findUnique({ where: { deviceId } });
       if (!isDeviceExist) {
         await prisma.kotAppUser.create({ data: { lastUsedAt: new Date(), deviceId } });
