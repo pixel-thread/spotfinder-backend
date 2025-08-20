@@ -21,6 +21,7 @@ const schema = z.object({
 });
 
 const uuid = z.string().uuid();
+
 export async function GET(request: Request) {
   try {
     const searchParams = new URL(request.url).searchParams;
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     });
 
     if (isVersionExists) {
-      return SuccessResponse({ message: 'version already exists' });
+      return SuccessResponse({ message: 'Version already exists' });
     }
 
     const version = await prisma.kotAppVersion.create({
@@ -83,7 +84,7 @@ export async function PUT(request: Request) {
   try {
     logger.info(request.url);
     const kot = await prisma.kotAppUser.findMany({
-      select: { lastUsedAt: true },
+      select: { lastUsedAt: true, createdAt: true },
     });
     return SuccessResponse({
       message: 'Kot Users',
